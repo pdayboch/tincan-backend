@@ -10,7 +10,10 @@
 
 # Ignore all environment files (except templates).
 /.env*
-!/.env*.erb
+
+# Ignore docker files
+Dockerfile
+.dockerignore
 
 # Ignore all default key files.
 /config/master.key

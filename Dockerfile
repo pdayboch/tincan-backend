@@ -26,7 +26,7 @@ RUN apt-get update -qq && \
 
 # Make sure Bundler version matches the bundler version in Gemfile.lock
 # and install Bundler
-RUN gem install bundler -v 2.5.18
+RUN gem install bundler -v 2.6.1
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
