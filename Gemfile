@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
-ruby '3.3.6'
+ruby '3.4.1'
 
 gem 'activejob-status'
 gem 'active_model_serializers'
@@ -11,6 +13,7 @@ gem 'pdf-reader'
 gem 'pg', '~> 1.5', '>= 1.5.6'
 gem 'puma', '~> 6.0'
 gem 'rails', '~> 7.2.1'
+gem 'rdoc', '6.6.3.1'
 gem 'redis'
 
 # Reduces boot times through caching; required in config/boot.rb
@@ -33,10 +36,6 @@ gem 'net-pop', github: 'ruby/net-pop'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem 'rack-cors'
-
-group :development, :test do
-  gem 'debug', platforms: %i[mri windows]
-end
 
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
