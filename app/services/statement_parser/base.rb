@@ -5,7 +5,7 @@ require 'pdf-reader'
 module StatementParser
   class Base
     def initialize(file_path)
-      puts("StatementParser Base: parsing #{file_path}") unless ENV['RAILS_ENV'] == 'test'
+      Rails.logger.info("StatementParser Base: parsing #{file_path}")
       @file_path = file_path
       @text = statement_text
     end
