@@ -11,6 +11,7 @@ gem 'groupdate'
 gem 'ostruct'
 gem 'pdf-reader'
 gem 'pg', '~> 1.5', '>= 1.5.6'
+gem 'plaid'
 gem 'puma', '~> 6.0'
 gem 'rails', '~> 7.2.1'
 gem 'rdoc', '6.6.3.1'
@@ -41,6 +42,7 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
   gem 'annotate'
+  gem 'awesome_print'
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
   gem 'ruby-lsp', require: false
