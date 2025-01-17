@@ -14,6 +14,7 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :accounts, dependent: :destroy
+  has_many :plaid_items, dependent: :destroy
 
   after_create :create_cash_account
 

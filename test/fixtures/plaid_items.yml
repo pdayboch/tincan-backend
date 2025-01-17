@@ -1,0 +1,21 @@
+# == Schema Information
+#
+# Table name: plaid_items
+#
+#  id                     :bigint           not null, primary key
+#  user_id                :bigint           not null
+#  access_key             :string           not null
+#  item_id                :string
+#  institution_id         :string
+#  sync_cursor            :string
+#  transactions_synced_at :datetime
+#  accounts_synced_at     :datetime
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#
+one:
+  user: one
+  access_key: MyString
+  item_id: MyString
+  accounts_synced_at: 2025-01-16 22:08:33
+  transactions_synced_at: 2025-01-16 22:08:33

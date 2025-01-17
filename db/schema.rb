@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_04_004043) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_17_030833) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -58,6 +58,22 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_04_004043) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_categorization_rules_on_category_id"
     t.index ["subcategory_id"], name: "index_categorization_rules_on_subcategory_id"
+  end
+
+  create_table "plaid_items", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "access_key", null: false
+    t.string "item_id"
+    t.string "institution_id"
+    t.string "sync_cursor"
+    t.datetime "transactions_synced_at"
+    t.datetime "accounts_synced_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["accounts_synced_at"], name: "index_plaid_items_on_accounts_synced_at"
+    t.index ["item_id"], name: "index_plaid_items_on_item_id", unique: true
+    t.index ["transactions_synced_at"], name: "index_plaid_items_on_transactions_synced_at"
+    t.index ["user_id"], name: "index_plaid_items_on_user_id"
   end
 
   create_table "statements", force: :cascade do |t|
@@ -115,6 +131,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_04_004043) do
   add_foreign_key "categorization_conditions", "categorization_rules"
   add_foreign_key "categorization_rules", "categories"
   add_foreign_key "categorization_rules", "subcategories"
+  add_foreign_key "plaid_items", "users"
   add_foreign_key "statements", "accounts"
   add_foreign_key "subcategories", "categories"
   add_foreign_key "transactions", "accounts"
