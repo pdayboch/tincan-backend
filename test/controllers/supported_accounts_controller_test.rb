@@ -18,7 +18,7 @@ class SupportedAccountsControllerTest < ActionDispatch::IntegrationTest
 
     json_response = response.parsed_body
     assert json_response[0]['accountProvider'].present?
-    assert json_response[0]['bankName'].present?
+    assert json_response[0]['institutionName'].present?
     assert json_response[0]['accountName'].present?
     assert json_response[0]['accountType'].present?
   end

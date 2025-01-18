@@ -17,7 +17,7 @@ module AccountServices
       assert_difference 'Account.count', 1 do
         result = service.call
         assert result.id.present?
-        assert_equal 'Dummy Bank', result.bank_name
+        assert_equal 'Dummy Bank', result.institution_name
         assert_equal 'Dummy Account', result.name
         assert_equal 'dummy type', result.account_type
       end

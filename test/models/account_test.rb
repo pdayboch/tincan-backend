@@ -5,7 +5,6 @@
 # Table name: accounts
 #
 #  id                  :bigint           not null, primary key
-#  bank_name           :string
 #  name                :string           not null
 #  account_type        :string
 #  active              :boolean          default(TRUE)
@@ -15,6 +14,11 @@
 #  updated_at          :datetime         not null
 #  statement_directory :text
 #  parser_class        :string
+#  plaid_account_id    :string
+#  institution_name    :string
+#  account_subtype     :string
+#  current_balance     :decimal(10, 2)
+#  plaid_item_id       :bigint
 #
 require 'test_helper'
 require 'support/mock_statement_parser'
@@ -51,7 +55,7 @@ class AccountTest < ActiveSupport::TestCase
     user = users(:one)
     account = Account.create(
       user_id: user.id,
-      bank_name: StatementParser::MockStatementParser::BANK_NAME,
+      institution_name: StatementParser::MockStatementParser::BANK_NAME,
       name: StatementParser::MockStatementParser::ACCOUNT_NAME,
       account_type: StatementParser::MockStatementParser::ACCOUNT_TYPE,
       parser_class: 'MockStatementParser'
@@ -70,7 +74,7 @@ class AccountTest < ActiveSupport::TestCase
     user = users(:one)
     account = Account.create(
       user_id: user.id,
-      bank_name: StatementParser::MockStatementParser::BANK_NAME,
+      institution_name: StatementParser::MockStatementParser::BANK_NAME,
       name: StatementParser::MockStatementParser::ACCOUNT_NAME,
       account_type: StatementParser::MockStatementParser::ACCOUNT_TYPE
     )

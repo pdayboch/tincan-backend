@@ -95,70 +95,70 @@ if Rails.env.development?
   end
 
   # Create Accounts
-  phil.accounts.find_or_create_by(bank_name: 'Chase', name: 'Freedom Credit Card') do |a|
-    a.bank_name = 'Chase'
+  phil.accounts.find_or_create_by(institution_name: 'Chase', name: 'Freedom Credit Card') do |a|
+    a.institution_name = 'Chase'
     a.name = 'Freedom Credit Card'
     a.account_type = 'credit card'
     a.statement_directory = 'Credit Cards/Chase Freedom'
     a.parser_class = 'ChaseFreedomCreditCard'
   end
 
-  phil.accounts.find_or_create_by(bank_name: 'Chase', name: 'Amazon Credit Card') do |a|
-    a.bank_name = 'Chase'
+  phil.accounts.find_or_create_by(institution_name: 'Chase', name: 'Amazon Credit Card') do |a|
+    a.institution_name = 'Chase'
     a.name = 'Amazon Credit Card'
     a.account_type = 'credit card'
     a.statement_directory = 'Credit Cards/Chase Amazon'
     a.parser_class = 'ChaseAmazonCreditCard'
   end
 
-  phil.accounts.find_or_create_by(bank_name: 'Chase', name: 'United Credit Card') do |a|
-    a.bank_name = 'Chase'
+  phil.accounts.find_or_create_by(institution_name: 'Chase', name: 'United Credit Card') do |a|
+    a.institution_name = 'Chase'
     a.name = 'United Credit Card'
     a.account_type = 'credit card'
     a.statement_directory = 'Credit Cards/Chase United'
   end
 
-  phil.accounts.find_or_create_by(bank_name: 'Charles Schwab', name: 'Checking') do |a|
-    a.bank_name = 'Charles Schwab'
+  phil.accounts.find_or_create_by(institution_name: 'Charles Schwab', name: 'Checking') do |a|
+    a.institution_name = 'Charles Schwab'
     a.name = 'Checking'
     a.account_type = 'checking'
     a.statement_directory = 'Banks and Investments/Schwab Checking'
     a.parser_class = 'CharlesSchwabChecking'
   end
 
-  phil.accounts.find_or_create_by(bank_name: 'Barclays', name: 'View Credit Card') do |a|
-    a.bank_name = 'Barclays'
+  phil.accounts.find_or_create_by(institution_name: 'Barclays', name: 'View Credit Card') do |a|
+    a.institution_name = 'Barclays'
     a.name = 'View Credit Card'
     a.account_type = 'credit card'
     a.statement_directory = 'Credit Cards/Barclays View'
     a.parser_class = 'BarclaysViewCreditCard'
   end
 
-  phil.accounts.find_or_create_by(bank_name: 'Capital One', name: 'Quicksilver Credit Card') do |a|
-    a.bank_name = 'Capital One'
+  phil.accounts.find_or_create_by(institution_name: 'Capital One', name: 'Quicksilver Credit Card') do |a|
+    a.institution_name = 'Capital One'
     a.name = 'Quicksilver Credit Card'
     a.account_type = 'credit card'
     a.statement_directory = 'Credit Cards/Capital One Quicksilver'
   end
 
-  kate.accounts.find_or_create_by(bank_name: 'Chase', name: 'Freedom Credit Card') do |a|
-    a.bank_name = 'Chase'
+  kate.accounts.find_or_create_by(institution_name: 'Chase', name: 'Freedom Credit Card') do |a|
+    a.institution_name = 'Chase'
     a.name = 'Freedom Credit Card'
     a.account_type = 'credit card'
     a.statement_directory = 'Kate/Credit Cards/Chase Freedom'
     a.parser_class = 'ChaseFreedomCreditCard'
   end
 
-  kate.accounts.find_or_create_by(bank_name: 'Chase', name: 'Amazon Credit Card') do |a|
-    a.bank_name = 'Chase'
+  kate.accounts.find_or_create_by(institution_name: 'Chase', name: 'Amazon Credit Card') do |a|
+    a.institution_name = 'Chase'
     a.name = 'Amazon Credit Card'
     a.account_type = 'credit card'
     a.statement_directory = 'Kate/Credit Cards/Chase Amazon'
     a.parser_class = 'ChaseAmazonCreditCard'
   end
 
-  kate.accounts.find_or_create_by(bank_name: 'Wells Fargo', name: 'Autograph Credit Card') do |a|
-    a.bank_name = 'Wells Fargo'
+  kate.accounts.find_or_create_by(institution_name: 'Wells Fargo', name: 'Autograph Credit Card') do |a|
+    a.institution_name = 'Wells Fargo'
     a.name = 'Autograph Credit Card'
     a.account_type = 'credit card'
     a.statement_directory = 'Kate/Credit Cards/Wells Fargo Autograph'

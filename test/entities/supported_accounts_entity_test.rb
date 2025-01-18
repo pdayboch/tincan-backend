@@ -17,7 +17,7 @@ class SupportedAccountsEntityTest < ActiveSupport::TestCase
     expected_data = [
       {
         accountProvider: 'MockStatementParser',
-        bankName: 'Dummy Bank',
+        institutionName: 'Dummy Bank',
         accountName: 'Dummy Account',
         accountType: 'dummy type'
       }

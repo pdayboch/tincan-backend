@@ -5,7 +5,6 @@
 # Table name: accounts
 #
 #  id                  :bigint           not null, primary key
-#  bank_name           :string
 #  name                :string           not null
 #  account_type        :string
 #  active              :boolean          default(TRUE)
@@ -15,6 +14,11 @@
 #  updated_at          :datetime         not null
 #  statement_directory :text
 #  parser_class        :string
+#  plaid_account_id    :string
+#  institution_name    :string
+#  account_subtype     :string
+#  current_balance     :decimal(10, 2)
+#  plaid_item_id       :bigint
 #
 class Account < ApplicationRecord
   belongs_to :user

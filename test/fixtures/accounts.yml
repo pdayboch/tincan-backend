@@ -3,7 +3,6 @@
 # Table name: accounts
 #
 #  id                  :bigint           not null, primary key
-#  bank_name           :string
 #  name                :string           not null
 #  account_type        :string
 #  active              :boolean          default(TRUE)
@@ -13,9 +12,14 @@
 #  updated_at          :datetime         not null
 #  statement_directory :text
 #  parser_class        :string
+#  plaid_account_id    :string
+#  institution_name    :string
+#  account_subtype     :string
+#  current_balance     :decimal(10, 2)
+#  plaid_item_id       :bigint
 #
 one:
-  bank_name: Chase
+  institution_name: Chase
   name: Freedom
   account_type: credit card
   active: true
@@ -25,7 +29,7 @@ one:
   parser_class: "ChaseFreedomCreditCard"
 
 two:
-  bank_name: Capital One
+  institution_name: Capital One
   name: Quicksilver
   account_type: credit card
   active: true
@@ -34,7 +38,7 @@ two:
   statement_directory: "credit card/capital one quicksilver"
 
 three:
-  bank_name: Chase
+  institution_name: Chase
   name: Amazon
   account_type: credit card
   active: true
@@ -50,7 +54,7 @@ non_deletable_account:
   user: one
 
 inactive_account:
-  bank_name: Inactive bank
+  institution_name: Inactive bank
   name: Inactive account
   account_type: credit card
   active: false

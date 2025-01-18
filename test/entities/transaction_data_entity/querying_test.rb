@@ -112,14 +112,14 @@ class TransactionDataEntityQueryingTest < ActiveSupport::TestCase
     assert(data[:transactions].all? { |t| t[:amount].to_s.include?(amount) })
   end
 
-  test 'data returns filtered transactions by search_string for account bank_name' do
-    bank_name = transactions(:one).account.bank_name
-    entity = TransactionDataEntity.new(search_string: bank_name)
+  test 'data returns filtered transactions by search_string for account institution_name' do
+    institution_name = transactions(:one).account.institution_name
+    entity = TransactionDataEntity.new(search_string: institution_name)
     data = entity.data
 
     assert data[:meta][:filteredCount].positive?,
-           'no transactions found by searching account bank_name'
-    assert(data[:transactions].all? { |t| t[:account][:bank].include?(bank_name) })
+           'no transactions found by searching account institution_name'
+    assert(data[:transactions].all? { |t| t[:account][:bank].include?(institution_name) })
   end
 
   test 'data returns filtered transactions by search_string for account name' do

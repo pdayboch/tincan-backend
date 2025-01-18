@@ -84,7 +84,7 @@ class TransactionDataEntity
     [
       'transactions.description ILIKE :search_string',
       'transactions.amount::text ILIKE :search_string',
-      'accounts.bank_name ILIKE :search_string',
+      'accounts.institution_name ILIKE :search_string',
       'accounts.name ILIKE :search_string',
       'users.name ILIKE :search_string',
       'subcategories.name ILIKE :search_string'

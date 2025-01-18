@@ -46,7 +46,7 @@ class TransactionSerializer < ActiveModel::Serializer
   attribute :account do
     {
       id: object.account.id,
-      bank: object.account.bank_name,
+      bank: object.account.institution_name,
       name: object.account.name
     }
   end

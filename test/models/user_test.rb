@@ -50,7 +50,8 @@ class UserTest < ActiveSupport::TestCase
 
   test 'should mark all accounts as deletable before user is destroyed' do
     user = users(:one)
-    account = user.accounts.create!(bank_name: 'Chase', name: 'Savings', account_type: 'savings', deletable: false)
+    account = user.accounts.create!(institution_name: 'Chase', name: 'Savings', account_type: 'savings',
+                                    deletable: false)
 
     user.destroy
 

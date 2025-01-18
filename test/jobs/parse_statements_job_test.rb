@@ -17,7 +17,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
   test 'should process statements and transactions' do
     PDF::Reader.stub(:new, mock_pdf_reader) do
       account = @user.accounts.create!(
-        bank_name: 'Bank',
+        institution_name: 'Bank',
         name: 'Test Account',
         statement_directory: @statement_directory,
         parser_class: 'MockStatementParser'
@@ -50,7 +50,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
   test 'should skip account if statement_directory is blank' do
     PDF::Reader.stub(:new, mock_pdf_reader) do
       @user.accounts.create!(
-        bank_name: 'Bank',
+        institution_name: 'Bank',
         name: 'Account without statement_dir',
         parser_class: 'MockStatementParser'
       )
@@ -66,7 +66,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
   test 'should skip account if parser_class is blank' do
     PDF::Reader.stub(:new, mock_pdf_reader) do
       @user.accounts.create!(
-        bank_name: 'Bank',
+        institution_name: 'Bank',
         name: 'Account without parser class',
         statement_directory: @statement_directory
       )
@@ -82,7 +82,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
   test 'should skip if statement directory is missing from filesystem' do
     PDF::Reader.stub(:new, mock_pdf_reader) do
       @user.accounts.create!(
-        bank_name: 'Bank',
+        institution_name: 'Bank',
         name: 'Account but missing account directory',
         statement_directory: 'other account',
         parser_class: 'MockStatementParser'
@@ -99,7 +99,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
   test 'should skip processed files' do
     PDF::Reader.stub(:new, mock_pdf_reader) do
       account = @user.accounts.create!(
-        bank_name: 'Bank',
+        institution_name: 'Bank',
         name: 'Account with processed statements',
         statement_directory: @statement_directory,
         parser_class: 'MockStatementParser'
