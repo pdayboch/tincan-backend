@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_17_031019) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_17_031912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -116,6 +116,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_17_031019) do
     t.date "statement_transaction_date"
     t.bigint "split_from_id", comment: "References the parent transaction if this transaction is a split"
     t.boolean "has_splits", default: false, null: false, comment: "Indicates if this transaction has associated split transactions"
+    t.string "merchant_name"
+    t.boolean "pending", default: false
+    t.string "plaid_transaction_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["split_from_id"], name: "index_transactions_on_split_from_id_not_null", where: "(split_from_id IS NOT NULL)"

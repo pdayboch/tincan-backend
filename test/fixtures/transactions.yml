@@ -17,6 +17,9 @@
 #  statement_transaction_date :date
 #  split_from_id              :bigint
 #  has_splits                 :boolean          default(FALSE), not null
+#  merchant_name              :string
+#  pending                    :boolean          default(FALSE)
+#  plaid_transaction_id       :string
 #
 one:
   transaction_date: 2024-07-02

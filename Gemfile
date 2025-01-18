@@ -14,7 +14,6 @@ gem 'pg', '~> 1.5', '>= 1.5.6'
 gem 'plaid'
 gem 'puma', '~> 6.0'
 gem 'rails', '~> 7.2.1'
-gem 'rdoc', '6.6.3.1'
 gem 'redis'
 
 # Reduces boot times through caching; required in config/boot.rb

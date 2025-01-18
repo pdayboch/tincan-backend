@@ -19,6 +19,9 @@
 #  statement_transaction_date :date
 #  split_from_id              :bigint
 #  has_splits                 :boolean          default(FALSE), not null
+#  merchant_name              :string
+#  pending                    :boolean          default(FALSE)
+#  plaid_transaction_id       :string
 #
 class TransactionSerializer < ActiveModel::Serializer
   attributes :id, :amount, :description, :notes
