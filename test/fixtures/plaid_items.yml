@@ -15,7 +15,7 @@
 #
 one:
   user: one
-  access_key: MyString
-  item_id: MyString
+  access_key: one-access-key
+  item_id: one-item-id
   accounts_synced_at: 2025-01-16 22:08:33
   transactions_synced_at: 2025-01-16 22:08:33
