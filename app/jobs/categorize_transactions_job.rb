@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-class CategorizeTransactionsJob < ApplicationJob
-  include ActiveJob::Status
-
-  queue_as :default
+class CategorizeTransactionsJob
+  include Sidekiq::Job
+  sidekiq_options retry: 3
 
   def perform
     return unless uncategorized_subcategory_id
@@ -25,11 +24,8 @@ class CategorizeTransactionsJob < ApplicationJob
   end
 
   def process_transactions_in_batches(categorization_rules)
-    progress.total = uncategorized_transaction_count
-
     transaction_query.find_in_batches(batch_size: 1000) do |batch|
       categorize_and_save_transactions(batch, categorization_rules)
-      progress.increment(batch.size)
     end
   end
 
@@ -53,11 +49,5 @@ class CategorizeTransactionsJob < ApplicationJob
   def transaction_query
     Transaction
       .where(subcategory_id: uncategorized_subcategory_id)
-  end
-
-  def uncategorized_transaction_count
-    Transaction
-      .where(subcategory_id: uncategorized_subcategory_id)
-      .count
   end
 end

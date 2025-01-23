@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 
 ruby '3.4.1'
 
-gem 'activejob-status'
 gem 'active_model_serializers'
 gem 'bcrypt'
 gem 'groupdate'
@@ -15,6 +14,7 @@ gem 'plaid'
 gem 'puma', '~> 6.0'
 gem 'rails', '~> 7.2.1'
 gem 'redis'
+gem 'sidekiq'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false

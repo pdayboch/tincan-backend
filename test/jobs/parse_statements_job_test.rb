@@ -3,7 +3,7 @@
 require 'test_helper'
 require 'support/mock_statement_parser'
 
-class ParseStatementsJobTest < ActiveJob::TestCase
+class ParseStatementsJobTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
     @root_doc_dir = Dir.mktmpdir
@@ -25,7 +25,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
 
       assert_difference 'Statement.count', 1 do
         assert_difference 'Transaction.count', 2 do
-          ParseStatementsJob.perform_now(@root_doc_dir)
+          ParseStatementsJob.new.perform(@root_doc_dir)
         end
       end
 
@@ -57,7 +57,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
 
       assert_no_difference 'Statement.count' do
         assert_no_difference 'Transaction.count' do
-          ParseStatementsJob.perform_now(@root_doc_dir)
+          ParseStatementsJob.new.perform(@root_doc_dir)
         end
       end
     end
@@ -73,7 +73,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
 
       assert_no_difference 'Statement.count' do
         assert_no_difference 'Transaction.count' do
-          ParseStatementsJob.perform_now(@root_doc_dir)
+          ParseStatementsJob.new.perform(@root_doc_dir)
         end
       end
     end
@@ -90,7 +90,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
 
       assert_no_difference 'Statement.count' do
         assert_no_difference 'Transaction.count' do
-          ParseStatementsJob.perform_now(@root_doc_dir)
+          ParseStatementsJob.new.perform(@root_doc_dir)
         end
       end
     end
@@ -112,7 +112,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
 
       assert_no_difference 'Statement.count' do
         assert_no_difference 'Transaction.count' do
-          ParseStatementsJob.perform_now(@root_doc_dir)
+          ParseStatementsJob.new.perform(@root_doc_dir)
         end
       end
     end

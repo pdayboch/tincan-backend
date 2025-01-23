@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class CategorizeTransactionsJobTest < ActiveJob::TestCase
+class CategorizeTransactionsJobTest < ActiveSupport::TestCase
   test 'job successfully categorizes transactions based on rules' do
     transaction = transactions(:uncategorized)
     subcategory = subcategories(:restaurant)
@@ -20,7 +20,7 @@ class CategorizeTransactionsJobTest < ActiveJob::TestCase
 
     assert_changes -> { transaction.reload.subcategory },
                    to: subcategory do
-      CategorizeTransactionsJob.perform_now
+      CategorizeTransactionsJob.new.perform
     end
   end
 
@@ -39,7 +39,32 @@ class CategorizeTransactionsJobTest < ActiveJob::TestCase
       match_value: "#{transaction.description}foo"
     )
     assert_no_changes -> { transaction.reload.subcategory } do
-      CategorizeTransactionsJob.perform_now
+      CategorizeTransactionsJob.new.perform
+    end
+  end
+
+  test 'job does not recategorize transaction with matching rule' do
+    categorized_transaction = transactions(:one)
+    rule_subcategory = subcategories(:cash_and_atm)
+    assert_not_equal(
+      categorized_transaction.subcategory_id,
+      rule_subcategory.id,
+      'Starting subcategory and rule subcategory must be different for this test'
+    )
+
+    rule = CategorizationRule.create!(
+      category: rule_subcategory.category,
+      subcategory: rule_subcategory
+    )
+    CategorizationCondition.create!(
+      categorization_rule: rule,
+      transaction_field: 'description',
+      match_type: 'exactly',
+      match_value: categorized_transaction.description
+    )
+
+    assert_no_changes -> { categorized_transaction.reload.subcategory } do
+      CategorizeTransactionsJob.new.perform
     end
   end
 
@@ -66,7 +91,7 @@ class CategorizeTransactionsJobTest < ActiveJob::TestCase
       match_value: transaction.description
     )
 
-    CategorizeTransactionsJob.perform_now
+    CategorizeTransactionsJob.new.perform
 
     transaction.reload
     assert_equal(
@@ -79,16 +104,5 @@ class CategorizeTransactionsJobTest < ActiveJob::TestCase
       transaction.subcategory,
       'Transaction subcategory should not change'
     )
-  end
-
-  test 'job initializes progress tracking correctly' do
-    subcategory = subcategories(:uncategorized)
-    uncategorized_count = Transaction.where(subcategory_id: subcategory.id).count
-
-    job = CategorizeTransactionsJob.perform_later
-    perform_enqueued_jobs
-
-    job_status = ActiveJob::Status.get(job)
-    assert_equal uncategorized_count, job_status[:total]
   end
 end

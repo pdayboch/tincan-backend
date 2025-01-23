@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
+  mount Sidekiq::Web => '/sidekiq'
+
   resources :transactions, only: %i[index create update destroy] do
     member do
       get :splits, to: 'transactions/splits#show'
@@ -23,11 +27,7 @@ Rails.application.routes.draw do
     resources :rules, only: %i[index create update destroy]
   end
 
-  post 'categorization-jobs',
-       to: 'categorization_jobs#create'
-  get 'categorization-jobs/:id/status',
-      to: 'categorization_jobs#status',
-      as: :status_categorization_job
+  post 'categorization-jobs', to: 'categorization_jobs#create'
 
   resources :trends, only: [] do
     collection do

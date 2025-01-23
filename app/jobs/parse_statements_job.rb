@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-class ParseStatementsJob < ApplicationJob
-  queue_as :default
+class ParseStatementsJob
+  include Sidekiq::Job
+  sidekiq_options retry: 1
 
-  def perform(root_doc_dir, *args)
+  def perform(root_doc_dir)
     Account.active.find_each do |account|
       # Skip account if statement_directory or parser_class is blank
       next if account.statement_directory.blank? || account.parser_class.blank?
