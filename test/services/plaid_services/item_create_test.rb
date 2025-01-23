@@ -4,9 +4,24 @@ require 'test_helper'
 
 module PlaidServices
   class ApiTest < ActiveSupport::TestCase
+    setup do
+      # Ensure jobs are not performed but only enqueued
+      Sidekiq::Testing.fake!
+    end
+
+    teardown do
+      # Clear all Sidekiq queues after each test
+      Sidekiq::Worker.clear_all
+    end
+
     test 'successfully creates plaid item' do
       user = users(:one)
-      plaid_response = { access_token: 'test-access-token', item_id: 'test-item-id' }
+      plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
+        {
+          access_token: 'test-access-token',
+          item_id: 'test-item-id'
+        }
+      )
 
       PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
         assert_difference 'PlaidItem.count', 1 do
@@ -14,11 +29,29 @@ module PlaidServices
           assert result
 
           plaid_item = PlaidItem.last
-          assert_equal plaid_response[:access_token], plaid_item.access_key
-          assert_equal plaid_response[:item_id], plaid_item.item_id
+          assert_equal 'test-access-token', plaid_item.access_key
+          assert_equal 'test-item-id', plaid_item.item_id
           assert_equal user.id, plaid_item.user_id
         end
       end
+    end
+
+    test 'successfully enqueues Plaid::GetItemDetailsJob with correct item_id' do
+      user = users(:one)
+      plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
+        {
+          access_token: 'test-access-token',
+          item_id: 'test-item-id'
+        }
+      )
+
+      PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
+        ItemCreate.new('test-public-token', user).call
+      end
+
+      assert_equal 1, Plaid::GetItemDetailsJob.jobs.size, 'Expected one job to be enqueued'
+      job_args = Plaid::GetItemDetailsJob.jobs.first['args']
+      assert_includes job_args, 'test-item-id'
     end
 
     test 'raises error and destroys plaid item for duplicate item id' do

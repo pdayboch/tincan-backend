@@ -43,7 +43,7 @@ module PlaidServices
     end
 
     def enqueue_plaid_get_item_details_job(item_id)
-      # TODO: Implement PlaidGetItemDetailsJob.perform_async(item_id)
+      Plaid::GetItemDetailsJob.perform_async(item_id)
     end
 
     # We need to make sure we destroy any Plaid Items on error before we lose
