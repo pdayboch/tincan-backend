@@ -5,6 +5,13 @@ require 'sidekiq/web'
 Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
 
+  namespace :api do
+    namespace :v1 do
+      post '/plaid/create-link-token', to: 'plaid#create_link_token'
+      post '/plaid/set-access-token', to: 'plaid#set_access_token'
+    end
+  end
+
   resources :transactions, only: %i[index create update destroy] do
     member do
       get :splits, to: 'transactions/splits#show'
