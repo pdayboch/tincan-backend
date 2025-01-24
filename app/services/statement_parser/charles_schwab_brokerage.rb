@@ -39,7 +39,7 @@ module StatementParser
       if statement_start_date < Date.new(2024, 7, 1)
         TransactionParserPreJul2024.new(@text).transactions
       else
-        TransactionParserPostJul2024.new(@text).transactions
+        Rails.logger.error('unable to parse Charles Schwab Brokerage statements after Jul 2024.')
       end
     end
 
