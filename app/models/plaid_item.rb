@@ -21,7 +21,13 @@ class PlaidItem < ApplicationRecord
 
   before_destroy :remove_item_from_plaid
 
+  ITEM_NOT_FOUND_ERROR = 'ITEM_NOT_FOUND'
+
   def remove_item_from_plaid
-    # TODO: Implement logic to remove item from Plaid, and block delete if failure.
+    PlaidServices::Api.new(access_key).destroy
+  rescue Plaid::ApiError => e
+    return true if e.data['error_code'] == ITEM_NOT_FOUND_ERROR
+
+    raise e
   end
 end

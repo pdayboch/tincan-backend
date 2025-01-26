@@ -53,6 +53,7 @@ class UserTest < ActiveSupport::TestCase
     account = user.accounts.create!(institution_name: 'Chase', name: 'Savings', account_type: 'savings',
                                     deletable: false)
 
+    PlaidItem.any_instance.stubs(:remove_item_from_plaid).returns(true)
     user.destroy
 
     assert_raises(ActiveRecord::RecordNotFound) { account.reload }

@@ -86,6 +86,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test 'should destroy user' do
     user = users(:one)
+    PlaidItem.any_instance.stubs(:remove_item_from_plaid).returns(true)
+
     assert_difference('User.count', -1) do
       delete user_url(user)
     end
