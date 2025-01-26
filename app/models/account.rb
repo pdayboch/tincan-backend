@@ -22,6 +22,7 @@
 #
 class Account < ApplicationRecord
   belongs_to :user
+  belongs_to :plaid_item, optional: true
   has_many :statements, dependent: :destroy
   has_many :transactions, dependent: :destroy
 

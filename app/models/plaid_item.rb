@@ -17,6 +17,7 @@
 #
 class PlaidItem < ApplicationRecord
   belongs_to :user
+  has_many :accounts, dependent: :nullify
 
   before_destroy :remove_item_from_plaid
 

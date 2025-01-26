@@ -13,9 +13,47 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
-one:
+
+new_item:
   user: one
   access_key: one-access-key
   item_id: one-item-id
-  accounts_synced_at: 2025-01-16 22:08:33
-  transactions_synced_at: 2025-01-16 22:08:33
+  accounts_synced_at:
+  transactions_synced_at:
+
+just_synced:
+  user: one
+  access_key: two-access-key
+  item_id: two-item-id
+  accounts_synced_at: <%= 1.hour.ago %>
+  transactions_synced_at: <%= 1.hour.ago %>
+
+accounts_synced_nil:
+  user: one
+  access_key: three-access-key
+  item_id: three-item-id
+  accounts_synced_at:
+  transactions_synced_at: <%= 2.days.ago %>
+
+accounts_synced_older_24_h:
+  user: one
+  access_key: four-access-key
+  item_id: four-item-id
+  accounts_synced_at: <%= 25.hours.ago %>
+  transactions_synced_at: <%= 2.days.ago %>
+
+with_multiple_accounts:
+  user: one
+  access_key: five-access-key
+  item_id: five-item-id
+  institution_id: ins_1234
+  accounts_synced_at: <%= 1.hour.ago %>
+  transactions_synced_at: <%= 1.hour.ago %>
+
+no_accounts:
+  user: one
+  access_key: six-access-key
+  item_id: six-item-id
+  institution_id: ins_2345
+  accounts_synced_at: <%= 1.hour.ago %>
+  transactions_synced_at: <%= 1.hour.ago %>

@@ -56,7 +56,7 @@ module PlaidServices
 
     test 'raises error and destroys plaid item for duplicate item id' do
       user = users(:one)
-      existing_item = plaid_items(:one)
+      existing_item = plaid_items(:new_item)
       plaid_response = {
         access_token: 'test-access-token',
         item_id: existing_item.item_id
@@ -81,7 +81,7 @@ module PlaidServices
 
     test 'logs error with item id when destroy item attempt fails' do
       user = users(:one)
-      existing_item = plaid_items(:one)
+      existing_item = plaid_items(:new_item)
       plaid_response = {
         access_token: 'test-access-token',
         item_id: existing_item.item_id

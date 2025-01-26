@@ -5,7 +5,7 @@ require 'test_helper'
 module Plaid
   class GetItemDetailsJobTest < ActiveSupport::TestCase
     test 'successfully sets the item institution id' do
-      item = plaid_items(:one)
+      item = plaid_items(:new_item)
 
       assert_nil item.institution_id, 'institution_id must be unset for this test'
 

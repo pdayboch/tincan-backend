@@ -17,7 +17,7 @@ class AccountDataEntityTest < ActiveSupport::TestCase
     entity = AccountDataEntity.new
     result = entity.data
 
-    assert_equal 5, result.size
+    assert_equal Account.count, result.size
     assert_includes result.pluck(:id), @account1.id
     assert_includes result.pluck(:id), @account2.id
     assert_includes result.pluck(:id), @account3.id
@@ -29,7 +29,7 @@ class AccountDataEntityTest < ActiveSupport::TestCase
     entity = AccountDataEntity.new(user_ids: [@user1.id])
     result = entity.data
 
-    assert_equal 4, result.size
+    assert_equal @user1.accounts.count, result.size
     assert_includes result.pluck(:id), @account1.id
     assert_includes result.pluck(:id), @account3.id
     assert_includes result.pluck(:id), @non_deletable_account.id
