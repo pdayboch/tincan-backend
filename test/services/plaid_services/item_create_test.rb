@@ -54,26 +54,48 @@ module PlaidServices
       assert_includes job_args, 'test-item-id'
     end
 
+    test 'successfully enqueues Plaid::FetchAccountsJob with correct item_id' do
+      user = users(:one)
+      plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
+        {
+          access_token: 'test-access-token',
+          item_id: 'test-item-id'
+        }
+      )
+
+      PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
+        ItemCreate.new('test-public-token', user).call
+      end
+
+      assert_equal 1, Plaid::FetchAccountsJob.jobs.size, 'Expected one job to be enqueued'
+      job_args = Plaid::FetchAccountsJob.jobs.first['args']
+      assert_includes job_args, 'test-item-id'
+    end
+
     test 'raises error and destroys plaid item for duplicate item id' do
       user = users(:one)
       existing_item = plaid_items(:new_item)
-      plaid_response = {
-        access_token: 'test-access-token',
-        item_id: existing_item.item_id
-      }
+      plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
+        {
+          access_token: 'test-access-token',
+          item_id: existing_item.item_id
+        }
+      )
 
       api_mock = Minitest::Mock.new
       api_mock.expect(:destroy, true)
 
       PlaidServices::Api.stub :new, lambda { |access_token|
-        assert_equal plaid_response[:access_token], access_token, 'API should be initialized with the correct access token'
+        assert_equal plaid_response.access_token,
+                     access_token,
+                     'API should be initialized with the correct access token'
         api_mock
       } do
         PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
           error = assert_raises(ItemCreate::Error) do
             ItemCreate.new('test-public-token', user).call
           end
-          assert_equal 'This institution has already been connected', error.message
+          assert_equal "Item has already been connected: #{existing_item.item_id}", error.message
         end
       end
       assert_mock api_mock
@@ -82,10 +104,12 @@ module PlaidServices
     test 'logs error with item id when destroy item attempt fails' do
       user = users(:one)
       existing_item = plaid_items(:new_item)
-      plaid_response = {
-        access_token: 'test-access-token',
-        item_id: existing_item.item_id
-      }
+      plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
+        {
+          access_token: 'test-access-token',
+          item_id: existing_item.item_id
+        }
+      )
 
       api_server_error_body = {
         'error_type' => 'TRANSACTIONS_ERROR',
