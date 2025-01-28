@@ -4,16 +4,17 @@
 #
 # Table name: plaid_items
 #
-#  id                     :bigint           not null, primary key
-#  user_id                :bigint           not null
-#  access_key             :string           not null
-#  item_id                :string
-#  institution_id         :string
-#  sync_cursor            :string
-#  transactions_synced_at :datetime
-#  accounts_synced_at     :datetime
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
+#  id                      :bigint           not null, primary key
+#  user_id                 :bigint           not null
+#  access_key              :string           not null
+#  item_id                 :string
+#  institution_id          :string
+#  transaction_sync_cursor :string
+#  transactions_synced_at  :datetime
+#  accounts_synced_at      :datetime
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  institution_name        :string
 #
 class PlaidItem < ApplicationRecord
   belongs_to :user

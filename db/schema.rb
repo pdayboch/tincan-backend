@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_17_031912) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_28_185134) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,11 +71,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_17_031912) do
     t.string "access_key", null: false
     t.string "item_id"
     t.string "institution_id"
-    t.string "sync_cursor"
+    t.string "transaction_sync_cursor"
     t.datetime "transactions_synced_at"
     t.datetime "accounts_synced_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "institution_name"
     t.index ["accounts_synced_at"], name: "index_plaid_items_on_accounts_synced_at"
     t.index ["item_id"], name: "index_plaid_items_on_item_id", unique: true
     t.index ["transactions_synced_at"], name: "index_plaid_items_on_transactions_synced_at"
