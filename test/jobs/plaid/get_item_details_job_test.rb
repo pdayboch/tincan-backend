@@ -4,21 +4,84 @@ require 'test_helper'
 
 module Plaid
   class GetItemDetailsJobTest < ActiveSupport::TestCase
-    test 'successfully sets the item institution id' do
+    test 'successfully sets the item institution details' do
       item = plaid_items(:new_item)
 
-      assert_nil item.institution_id, 'institution_id must be unset for this test'
+      assert_nil item.institution_id, 'institution_id must be empty for this test'
+      assert_nil item.institution_name, 'institution_name must be empty for this test'
+
+      institution_id = 'ins_1234'
 
       plaid_api = mock('plaid_api')
       PlaidServices::Api.stubs(:new).returns(plaid_api)
-      mock_item_data = { item_id: item.id, institution_id: 'ins_12' }
-      plaid_response = Plaid::ItemGetResponse.new(item: mock_item_data)
-      plaid_api.expects(:show).returns(plaid_response)
+      item_data = Plaid::ItemGetResponse.new(
+        item: Plaid::ItemWithConsentFields.new(
+          {
+            item_id: item.id,
+            institution_id: institution_id
+          }
+        )
+      )
+      plaid_api.expects(:show).returns(item_data)
 
-      assert_no_changes -> { item.reload.attributes.except('institution_id', 'updated_at') } do
+      institution_data = Plaid::InstitutionsGetByIdResponse.new(
+        institution: Plaid::Institution.new(
+          name: 'test bank'
+        )
+      )
+      PlaidServices::Api.expects(:institution_get)
+                        .with(institution_id)
+                        .returns(institution_data)
+
+      assert_no_changes lambda {
+        item.reload.attributes.except(
+          'institution_id',
+          'institution_name',
+          'updated_at'
+        )
+      } do
         Plaid::GetItemDetailsJob.new.perform(item.item_id)
       end
-      assert_equal 'ins_12', item.reload.institution_id
+      assert_equal institution_id, item.reload.institution_id
+      assert_equal 'test bank', item.reload.institution_name
+    end
+
+    test 'syncs institution_name to accounts if any' do
+      item = plaid_items(:with_multiple_accounts)
+
+      assert_nil item.institution_name, 'institution_name must be empty for this test'
+      item.accounts.each do |a|
+        assert_nil a.institution_name, 'all accounts must have empty institution_name'
+      end
+
+      institution_id = 'ins_1234'
+      institution_name = 'test bank name'
+
+      plaid_api = mock('plaid_api')
+      PlaidServices::Api.stubs(:new).returns(plaid_api)
+      item_data = Plaid::ItemGetResponse.new(
+        item: Plaid::ItemWithConsentFields.new(
+          {
+            item_id: item.id,
+            institution_id: institution_id
+          }
+        )
+      )
+      plaid_api.expects(:show).returns(item_data)
+
+      institution_data = Plaid::InstitutionsGetByIdResponse.new(
+        institution: Plaid::Institution.new(
+          name: institution_name
+        )
+      )
+      PlaidServices::Api.expects(:institution_get)
+                        .with(institution_id)
+                        .returns(institution_data)
+
+      Plaid::GetItemDetailsJob.new.perform(item.item_id)
+      item.reload.accounts.each do |a|
+        assert_equal institution_name, a.institution_name
+      end
     end
 
     test 'exits gracefully when plaid_item does not exist' do

@@ -7,18 +7,36 @@ module Plaid
     sidekiq_options retry: 5
 
     def perform(plaid_item_id)
-      local_item = PlaidItem.find_by(item_id: plaid_item_id)
-      return unless local_item
+      @item = PlaidItem.find_by(item_id: plaid_item_id)
+      return unless @item
 
-      details = item_details(local_item.access_key)
-      local_item.institution_id = details[:item][:institution_id]
-      local_item.save!
+      update_item!
+      sync_institution_name_to_accounts!
     end
 
     private
 
-    def item_details(access_key)
-      PlaidServices::Api.new(access_key).show.to_hash
+    def update_item!
+      @item.institution_id = item_details.institution_id
+      @item.institution_name = institution_details.name
+      @item.save!
+    end
+
+    def sync_institution_name_to_accounts!
+      return unless @item.accounts.any?
+
+      @item.accounts.update_all(institution_name: @item.institution_name)
+    end
+
+    def item_details
+      @item_details ||= PlaidServices::Api.new(@item.access_key)
+                                          .show
+                                          .item
+    end
+
+    def institution_details
+      @institution_details ||= PlaidServices::Api.institution_get(@item.institution_id)
+                                                 .institution
     end
   end
 end

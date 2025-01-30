@@ -62,7 +62,6 @@ inactive_account:
   user: one
 
 plaid_credit_account:
-  institution_name: Plaid connected bank
   name: plaid account
   account_type: credit
   account_subtype: credit card
@@ -73,7 +72,6 @@ plaid_credit_account:
   current_balance: 200.42
 
 plaid_savings_account:
-  institution_name: Plaid connected bank
   name: plaid account
   account_type: depository
   account_subtype: savings
