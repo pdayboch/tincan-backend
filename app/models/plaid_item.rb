@@ -24,6 +24,10 @@ class PlaidItem < ApplicationRecord
 
   ITEM_NOT_FOUND_ERROR = 'ITEM_NOT_FOUND'
 
+  def mark_accounts_as_synced
+    update(accounts_synced_at: Time.zone.now)
+  end
+
   def remove_item_from_plaid
     PlaidServices::Api.new(access_key).destroy
   rescue Plaid::ApiError => e

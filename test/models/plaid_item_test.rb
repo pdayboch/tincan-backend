@@ -19,6 +19,14 @@
 require 'test_helper'
 
 class PlaidItemTest < ActiveSupport::TestCase
+  test 'mark_accounts_as_synced updates the accounts_synced_at column' do
+    item = plaid_items(:new_item)
+    Timecop.freeze(Time.zone.local(2025, 1, 31, 12, 0, 0)) do
+      item.mark_accounts_as_synced
+      assert_equal Time.zone.local(2025, 1, 31, 12, 0, 0), item.accounts_synced_at
+    end
+  end
+
   test 'destroy removes item from plaid before deletion' do
     item = plaid_items(:new_item)
     item_remove_response = Plaid::ItemRemoveResponse.new(request_id: 'abcd')
