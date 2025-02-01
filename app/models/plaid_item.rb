@@ -28,6 +28,10 @@ class PlaidItem < ApplicationRecord
     update(accounts_synced_at: Time.zone.now)
   end
 
+  def mark_transactions_as_synced
+    update(transactions_synced_at: Time.zone.now)
+  end
+
   def remove_item_from_plaid
     PlaidServices::Api.new(access_key).destroy
   rescue Plaid::ApiError => e
