@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_28_185134) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_01_124205) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -122,6 +122,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_28_185134) do
     t.string "plaid_transaction_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
+    t.index ["plaid_transaction_id"], name: "index_transactions_on_plaid_transaction_id", unique: true, where: "(plaid_transaction_id IS NOT NULL)"
     t.index ["split_from_id"], name: "index_transactions_on_split_from_id_not_null", where: "(split_from_id IS NOT NULL)"
     t.index ["statement_id"], name: "index_transactions_on_statement_id"
     t.index ["subcategory_id"], name: "index_transactions_on_subcategory_id"
