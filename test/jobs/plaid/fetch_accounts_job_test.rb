@@ -4,25 +4,8 @@ require 'test_helper'
 
 module Plaid
   class FetchAccountsJobTest < ActiveSupport::TestCase
-    setup do
-      @mock_api = mock('plaid-api')
-      PlaidServices::Api.stubs(:new).returns(@mock_api)
-
-      @mock_account_response = Plaid::AccountsGetResponse.new(
-        accounts: [
-          {
-            account_id: '12345',
-            name: 'checking'
-          }
-        ]
-      )
-    end
-
     test 'processes items with accounts_synced_at nil' do
       item = plaid_items(:accounts_synced_nil)
-      @mock_api.expects(:accounts)
-               .at_least_once
-               .returns(@mock_account_response)
 
       mock_sync_accounts_service = mock('sync-accounts-service')
       PlaidServices::SyncAccounts.expects(:new)
@@ -30,7 +13,7 @@ module Plaid
                                  .returns(mock_sync_accounts_service)
 
       PlaidServices::SyncAccounts.expects(:new)
-                                 .with { |arg1, arg2| arg1.id == item.id && arg2 == @mock_account_response }
+                                 .with { |arg| arg.id == item.id }
                                  .returns(mock_sync_accounts_service)
 
       mock_sync_accounts_service.expects(:call)
@@ -42,9 +25,6 @@ module Plaid
 
     test 'processes items with accounts_synced_at older than 24 hours' do
       item = plaid_items(:accounts_synced_older_24_h)
-      @mock_api.expects(:accounts)
-               .at_least_once
-               .returns(@mock_account_response)
 
       mock_sync_accounts_service = mock('sync-accounts-service')
       PlaidServices::SyncAccounts.expects(:new)
@@ -52,7 +32,7 @@ module Plaid
                                  .returns(mock_sync_accounts_service)
 
       PlaidServices::SyncAccounts.expects(:new)
-                                 .with { |arg1, arg2| arg1.id == item.id && arg2 == @mock_account_response }
+                                 .with { |arg| arg.id == item.id }
                                  .returns(mock_sync_accounts_service)
 
       mock_sync_accounts_service.expects(:call)
@@ -66,17 +46,14 @@ module Plaid
       process_item = plaid_items(:just_synced)
       not_process_item = plaid_items(:accounts_synced_nil)
 
-      @mock_api.expects(:accounts)
-               .returns(@mock_account_response)
-
       mock_sync_accounts_service = mock('sync-accounts-service')
 
       PlaidServices::SyncAccounts.expects(:new)
-                                 .with { |arg1, _| arg1.id == not_process_item.id }
+                                 .with { |arg| arg.id == not_process_item.id }
                                  .never
 
       PlaidServices::SyncAccounts.expects(:new)
-                                 .with { |arg1, _| arg1.id == process_item.id }
+                                 .with { |arg| arg.id == process_item.id }
                                  .returns(mock_sync_accounts_service)
 
       mock_sync_accounts_service.expects(:call)
@@ -86,14 +63,14 @@ module Plaid
     end
 
     test 'halts processing when plaid rate limit exceeded' do
-      rate_limit_error = Plaid::ApiError.new(
-        data: { 'error_type' => FetchAccountsJob::RATE_LIMIT_EXCEEDED }
-      )
-      @mock_api.expects(:accounts)
-               .raises(rate_limit_error)
+      mock_sync_accounts_service = mock('sync-accounts-service')
+      PlaidServices::SyncAccounts.expects(:new)
+                                 .returns(mock_sync_accounts_service)
+
+      mock_sync_accounts_service.expects(:call)
+                                .raises(PlaidServices::SyncAccounts::PlaidApiRateLimitError)
 
       Rails.logger.expects(:warn).with('Plaid API rate limit exceeded. Stopping job.')
-      PlaidServices::SyncAccounts.expects(:new).never
 
       Plaid::FetchAccountsJob.new.perform
     end
@@ -102,8 +79,12 @@ module Plaid
       some_error = Plaid::ApiError.new(
         data: { 'error_type' => 'SERVER_ERROR' }
       )
-      @mock_api.expects(:accounts)
-               .raises(some_error)
+      mock_sync_accounts_service = mock('sync-accounts-service')
+      PlaidServices::SyncAccounts.expects(:new)
+                                 .returns(mock_sync_accounts_service)
+
+      mock_sync_accounts_service.expects(:call)
+                                .raises(some_error)
 
       assert_raises Plaid::ApiError do
         Plaid::FetchAccountsJob.new.perform

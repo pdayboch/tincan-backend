@@ -2,36 +2,46 @@
 
 module PlaidServices
   class SyncAccounts
-    class DataConsistencyError < StandardError; end
+    class PlaidApiRateLimitError < StandardError; end
 
-    def initialize(plaid_item, accounts_data)
-      @plaid_item = plaid_item
-      @accounts_data = accounts_data
+    RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED'
+
+    def initialize(plaid_item)
+      @item = plaid_item
       check_params!
-      check_item_ids_match!
       @user = plaid_item.user
-      @existing_account_ids = @plaid_item.accounts.map(&:plaid_account_id)
+      @existing_account_ids = @item.accounts.map(&:plaid_account_id)
     end
 
     def call
-      @accounts_data.accounts.each do |account_data|
+      accounts_data = fetch_accounts_data
+      accounts_data.each do |account_data|
         sync_or_create_account(account_data)
       end
 
-      deactivate_missing_accounts
+      deactivate_missing_accounts(accounts_data)
+      @item.mark_accounts_as_synced
     end
 
     private
 
+    def fetch_accounts_data
+      PlaidServices::Api.new(@item.access_key)
+                        .accounts
+                        .accounts
+    rescue Plaid::ApiError => e
+      handle_api_error(e)
+    end
+
     def sync_or_create_account(account_data)
       if account_exists?(account_data)
-        update_account!(account_data)
+        update_account(account_data)
       else
         create_account!(account_data)
       end
     end
 
-    def update_account!(data)
+    def update_account(data)
       update_data = {
         current_balance: balance(data),
         name: name(data)
@@ -45,7 +55,7 @@ module PlaidServices
         name: name(data),
         current_balance: balance(data),
         user_id: @user.id,
-        plaid_item_id: @plaid_item.id,
+        plaid_item_id: @item.id,
         account_type: account_type(data),
         account_subtype: account_subtype(data)
       }
@@ -54,7 +64,7 @@ module PlaidServices
     end
 
     def local_account(data)
-      @plaid_item.accounts.find_by(plaid_account_id: plaid_account_id(data))
+      @item.accounts.find_by(plaid_account_id: plaid_account_id(data))
     end
 
     def account_exists?(data)
@@ -81,28 +91,27 @@ module PlaidServices
       data.subtype
     end
 
-    def deactivate_missing_accounts
-      missing_account_ids = @existing_account_ids - @accounts_data.accounts.map { |a| plaid_account_id(a) }
-      @plaid_item
+    def missing_account_ids(accounts_data)
+      @existing_account_ids - accounts_data.map { |a| plaid_account_id(a) }
+    end
+
+    def deactivate_missing_accounts(accounts_data)
+      missing_account_ids = missing_account_ids(accounts_data)
+      @item
         .accounts
         .where(plaid_account_id: missing_account_ids)
         .update(active: false)
     end
 
     def check_params!
-      error_msg = "plaid_item must be of type PlaidItem: #{@plaid_item.class}"
-      raise ArgumentError, error_msg unless @plaid_item.instance_of? PlaidItem
-
-      error_msg = "accounts_data must be of type Plaid::AccountsGetResponse: #{@accounts_data.class}"
-      raise ArgumentError, error_msg unless @accounts_data.instance_of? Plaid::AccountsGetResponse
+      error_msg = "plaid_item must be of type PlaidItem: #{@item.class}"
+      raise ArgumentError, error_msg unless @item.instance_of? PlaidItem
     end
 
-    def check_item_ids_match!
-      accounts_item_id = @accounts_data.item.item_id
-      return if @plaid_item.item_id == accounts_item_id
+    def handle_api_error(error)
+      raise error unless error.data['error_type'] == RATE_LIMIT_EXCEEDED
 
-      err_msg = "Plaid Item ID #{@plaid_item.item_id} does not match item_id from accounts_data #{accounts_item_id}"
-      raise DataConsistencyError, err_msg
+      raise PlaidApiRateLimitError
     end
   end
 end
