@@ -40,7 +40,7 @@ class Transaction < ApplicationRecord
   has_many :splits,
            class_name: 'Transaction',
            foreign_key: 'split_from_id',
-           dependent: :nullify,
+           dependent: :destroy,
            inverse_of: :parent_transaction
 
   before_validation :set_default_category_and_subcategory, on: :create
