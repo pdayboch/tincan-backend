@@ -23,22 +23,27 @@
 class AccountSerializer < ActiveModel::Serializer
   attributes :id, :name, :active, :deletable
 
-  attribute :institutionName do
-    object.institution_name
-  end
-
   attribute :accountType do
     object.account_type
   end
 
-  attribute :user do
-    {
-      id: object.user_id,
-      name: object.user.name
-    }
+  attribute :accountSubtype do
+    object.account_subtype
+  end
+
+  attribute :currentBalance do
+    object.current_balance
+  end
+
+  attribute :institutionName do
+    object.institution_name
   end
 
   attribute :statementDirectory do
     object.statement_directory
+  end
+
+  attribute :userId do
+    object.user_id
   end
 end
