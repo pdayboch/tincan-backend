@@ -58,8 +58,8 @@ class TransactionDataEntityQueryingTest < ActiveSupport::TestCase
     assert ignored_count.positive?,
            'There should be at least one transaction for an ignored account ID'
 
-    assert(data[:transactions].all? { |t| included_ids.include?(t[:account][:id]) })
-    assert(data[:transactions].none? { |t| ignored_ids.include?(t[:account][:id]) })
+    assert(data[:transactions].all? { |t| included_ids.include?(t[:accountId]) })
+    assert(data[:transactions].none? { |t| ignored_ids.include?(t[:accountId]) })
   end
 
   test 'data returns filtered transactions by users' do
@@ -74,8 +74,8 @@ class TransactionDataEntityQueryingTest < ActiveSupport::TestCase
     assert ignored_count.positive?,
            'There should be at least one transaction for an ignored user ID'
 
-    assert(data[:transactions].all? { |t| included_ids.include?(t[:user][:id]) })
-    assert(data[:transactions].none? { |t| ignored_ids.include?(t[:user][:id]) })
+    assert(data[:transactions].all? { |t| included_ids.include?(t[:userId]) })
+    assert(data[:transactions].none? { |t| ignored_ids.include?(t[:userId]) })
   end
 
   test 'data returns filtered transactions by subcategories' do
@@ -113,33 +113,36 @@ class TransactionDataEntityQueryingTest < ActiveSupport::TestCase
   end
 
   test 'data returns filtered transactions by search_string for account institution_name' do
-    institution_name = transactions(:one).account.institution_name
+    account = transactions(:one).account
+    institution_name = account.institution_name
     entity = TransactionDataEntity.new(search_string: institution_name)
     data = entity.data
 
     assert data[:meta][:filteredCount].positive?,
            'no transactions found by searching account institution_name'
-    assert(data[:transactions].all? { |t| t[:account][:bank].include?(institution_name) })
+    assert(data[:transactions].all? do |t|
+      Account.find(t[:accountId]).institution_name.include?(institution_name)
+    end)
   end
 
   test 'data returns filtered transactions by search_string for account name' do
-    account_name = transactions(:one).account.name
-    entity = TransactionDataEntity.new(search_string: account_name)
+    account = transactions(:one).account
+    entity = TransactionDataEntity.new(search_string: account.name)
     data = entity.data
 
     assert data[:meta][:filteredCount].positive?,
            'no transactions found by searching account name'
-    assert(data[:transactions].all? { |t| t[:account][:name].include?(account_name) })
+    assert(data[:transactions].all? { |t| Account.find(t[:accountId]).name.include?(account.name) })
   end
 
   test 'data returns filtered transactions by search_string for user name' do
-    user_name = transactions(:one).account.user.name
-    entity = TransactionDataEntity.new(search_string: user_name)
+    user = transactions(:one).account.user
+    entity = TransactionDataEntity.new(search_string: user.name)
     data = entity.data
 
     assert data[:meta][:filteredCount].positive?,
            'no transactions found by searching user name'
-    assert(data[:transactions].all? { |t| t[:user][:name].include?(user_name) })
+    assert(data[:transactions].all? { |t| User.find(t[:userId]).name.include?(user.name) })
   end
 
   test 'data returns filtered transactions by search_string for subcategory' do

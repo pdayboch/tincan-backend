@@ -24,7 +24,11 @@
 #  plaid_transaction_id       :string
 #
 class TransactionSerializer < ActiveModel::Serializer
-  attributes :id, :amount, :description, :notes
+  attributes :id, :amount, :description, :notes, :pending
+
+  attribute :accountId do
+    object.account_id
+  end
 
   attribute :transactionDate do
     object.transaction_date
@@ -46,19 +50,8 @@ class TransactionSerializer < ActiveModel::Serializer
     object.has_splits
   end
 
-  attribute :account do
-    {
-      id: object.account.id,
-      bank: object.account.institution_name,
-      name: object.account.name
-    }
-  end
-
-  attribute :user do
-    {
-      id: object.account.user.id,
-      name: object.account.user.name
-    }
+  attribute :userId do
+    object.account.user_id
   end
 
   attribute :category do
