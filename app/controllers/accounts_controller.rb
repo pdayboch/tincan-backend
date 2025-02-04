@@ -25,7 +25,7 @@ class AccountsController < ApplicationController
     account = Account.find(params[:id])
     raise UnprocessableEntityError, account.errors unless account.update(account_update_params)
 
-    render json: @account
+    render json: account
   end
 
   # DELETE /accounts/1

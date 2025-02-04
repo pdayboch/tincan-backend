@@ -62,6 +62,11 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     account.reload
     assert_equal account.active, false, 'Account was not updated'
     assert_equal account.statement_directory, 'credit cards/new', 'Account was not updated'
+
+    json_response = response.parsed_body
+    assert_equal account.id, json_response['id']
+    assert_equal account.statement_directory, json_response['statementDirectory']
+    assert_equal account.active, json_response['active']
   end
 
   test 'should return error when updating account with disallowed params' do
