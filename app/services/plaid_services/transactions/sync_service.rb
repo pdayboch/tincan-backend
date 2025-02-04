@@ -48,7 +48,20 @@ module PlaidServices
       end
 
       def handle_removed(transactions_data)
-        # TODO
+        transactions_data[:removed].group_by(&:account_id).each do |account_id, transactions|
+          account = @item.accounts.find_by(plaid_account_id: account_id)
+          if account.nil?
+            error_msg = "Account: #{account_id} not found when attempting to remove transactions."
+            Rails.logger.error(error_msg)
+            next
+          end
+
+          deleted_ids = RemoveService.new(account, transactions).call
+          log_msg = 'Transactions SyncService requested to delete: ' \
+                    "#{transactions.map(&:transaction_id).join(', ')}. Actual " \
+                    "deleted transactions: #{deleted_ids.join(', ')}"
+          Rails.logger.info(log_msg)
+        end
       end
 
       def update_transaction_cursor(transaction_data)

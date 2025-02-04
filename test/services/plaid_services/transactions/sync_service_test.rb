@@ -71,34 +71,30 @@ module PlaidServices
         end
       end
 
-      test 'added correctly calls the Transaction::CreateService' do
+      test 'added correctly calls the Transactions::CreateService' do
         item = plaid_items(:with_multiple_accounts)
         account1 = item.accounts.order(:id).first
         account2 = item.accounts.order(:id).last
 
         transactions = [
           Plaid::Transaction.new(
-            {
-              account_id: account1.plaid_account_id,
-              amount: 6.33,
-              authorized_date: Date.new(2025, 1, 1),
-              category: %w[Travel Taxi],
-              date: Date.new(2025, 1, 2),
-              name: 'Uber 072515 SF**POOL**',
-              pending: false,
-              transaction_id: 'transaction-1-id'
-            }
+            account_id: account1.plaid_account_id,
+            amount: 6.33,
+            authorized_date: Date.new(2025, 1, 1),
+            category: %w[Travel Taxi],
+            date: Date.new(2025, 1, 2),
+            name: 'Uber 072515 SF**POOL**',
+            pending: false,
+            transaction_id: 'transaction-1-id'
           ),
           Plaid::Transaction.new(
-            {
-              account_id: account2.plaid_account_id,
-              amount: 5.4,
-              category: ['Food and Drink', 'Restaurants'],
-              date: Date.new(2024, 2, 23),
-              name: "McDonald's",
-              pending: true,
-              transaction_id: 'transaction-2-id'
-            }
+            account_id: account2.plaid_account_id,
+            amount: 5.4,
+            category: ['Food and Drink', 'Restaurants'],
+            date: Date.new(2024, 2, 23),
+            name: "McDonald's",
+            pending: true,
+            transaction_id: 'transaction-2-id'
           )
         ]
 
@@ -140,19 +136,19 @@ module PlaidServices
             authorized_date: Date.new(2025, 1, 1),
             category: %w[Travel Taxi],
             date: Date.new(2025, 1, 2),
-            name: 'Uber 072515 SF**POOL**',
+            name: 'Transaction 1',
             pending: false,
             transaction_id: 'transaction-1-id'
           ),
           Plaid::Transaction.new(
             account_id: account.plaid_account_id,
             amount: 6.33,
-            authorized_date: Date.new(2025, 1, 1),
+            authorized_date: Date.new(2025, 1, 2),
             category: %w[Travel Taxi],
-            date: Date.new(2025, 1, 2),
-            name: 'Uber 072515 SF**POOL**',
+            date: Date.new(2025, 1, 3),
+            name: 'Transaction 2',
             pending: false,
-            transaction_id: 'transaction-1-id'
+            transaction_id: 'transaction-2-id'
           )
         ]
 
@@ -220,6 +216,141 @@ module PlaidServices
           .reload
           .transactions
           .find_by(plaid_transaction_id: 'non-existing-id')
+      end
+
+      test 'removed correctly calls the Transactions::RemoveService' do
+        item = plaid_items(:with_multiple_accounts)
+        account1 = item.accounts.order(:id).first
+        account2 = item.accounts.order(:id).last
+
+        account1.transactions.create!(
+          plaid_transaction_id: 'transaction-1-id',
+          amount: 12.34,
+          description: 'test transaction',
+          transaction_date: Date.new(2025, 1, 1)
+        )
+
+        account2.transactions.create!(
+          plaid_transaction_id: 'transaction-2-id',
+          amount: 34.56,
+          description: 'test transaction 2',
+          transaction_date: Date.new(2025, 2, 1)
+        )
+
+        transactions = [
+          Plaid::RemovedTransaction.new(
+            account_id: account1.plaid_account_id,
+            transaction_id: 'transaction-1-id'
+          ),
+          Plaid::Transaction.new(
+            account_id: account2.plaid_account_id,
+            transaction_id: 'transaction-2-id'
+          )
+        ]
+
+        @mock_api.expects(:transactions_sync)
+                 .returns(
+                   added: [],
+                   modified: [],
+                   removed: transactions,
+                   next_cursor: 'next-cursor'
+                 )
+
+        mock_remove_service = mock('remove-service')
+
+        RemoveService.expects(:new).with do |arg1, arg2|
+          arg1.plaid_account_id == account1.plaid_account_id && arg2 == transactions[..0]
+        end
+        .times(1)
+        .returns(mock_remove_service)
+
+        RemoveService.expects(:new).with do |arg1, arg2|
+          arg1.plaid_account_id == account2.plaid_account_id && arg2 == transactions[1..]
+        end
+        .times(1)
+        .returns(mock_remove_service)
+
+        mock_remove_service.expects(:call)
+                           .times(2)
+                           .returns(transactions.map(&:transaction_id))
+
+        SyncService.new(item).call
+      end
+
+      test 'removed logs and skips any accounts not found' do
+        item = plaid_items(:with_multiple_accounts)
+        account = item.accounts.first
+
+        account.transactions.create!(
+          plaid_transaction_id: 'transaction-2-id',
+          amount: 34.56,
+          description: 'test transaction',
+          transaction_date: Date.new(2025, 2, 1)
+        )
+
+        transactions = [
+          Plaid::RemovedTransaction.new(
+            account_id: 'non-existant-account',
+            transaction_id: 'transaction-1-id'
+          ),
+          Plaid::RemovedTransaction.new(
+            account_id: account.plaid_account_id,
+            transaction_id: 'transaction-2-id'
+          )
+        ]
+
+        @mock_api.expects(:transactions_sync)
+                 .returns(
+                   added: [],
+                   modified: [],
+                   removed: transactions,
+                   next_cursor: 'next-cursor'
+                 )
+
+        expected_msg = 'Account: non-existant-account not found when attempting to remove transactions.'
+        Rails.logger.expects(:error).with(expected_msg)
+
+        assert_difference 'account.transactions.count', -1 do
+          SyncService.new(item).call
+        end
+      end
+
+      test 'removed logs deleted request and actual deleted transactions' do
+        item = plaid_items(:with_multiple_accounts)
+        account = item.accounts.first
+
+        account.transactions.create!(
+          plaid_transaction_id: 'transaction-2-id',
+          amount: 34.56,
+          description: 'test transaction',
+          transaction_date: Date.new(2025, 2, 1)
+        )
+
+        transactions = [
+          Plaid::RemovedTransaction.new(
+            account_id: account.plaid_account_id,
+            transaction_id: 'transaction-1-id'
+          ),
+          Plaid::RemovedTransaction.new(
+            account_id: account.plaid_account_id,
+            transaction_id: 'transaction-2-id'
+          )
+        ]
+
+        @mock_api.expects(:transactions_sync)
+                 .returns(
+                   added: [],
+                   modified: [],
+                   removed: transactions,
+                   next_cursor: 'next-cursor'
+                 )
+
+        expected_msg = 'Transactions SyncService requested to delete: ' \
+                       "#{transactions.map(&:transaction_id).join(', ')}. Actual " \
+                       'deleted transactions: transaction-2-id'
+        Rails.logger.expects(:info).with(expected_msg)
+
+        SyncService.new(item).call
       end
     end
   end

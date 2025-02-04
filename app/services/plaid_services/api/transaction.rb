@@ -55,7 +55,8 @@ module PlaidServices
       def fetch_transactions_page(cursor)
         request = Plaid::TransactionsSyncRequest.new(
           access_token: @access_token,
-          cursor: cursor
+          cursor: cursor,
+          count: 500
         )
         @client.transactions_sync(request)
       end
