@@ -3,56 +3,43 @@
 require 'test_helper'
 
 class AccountDataEntityTest < ActiveSupport::TestCase
-  setup do
-    @user1 = users(:one)
-    @user2 = users(:two)
-    @account1 = accounts(:one)
-    @account2 = accounts(:two)
-    @account3 = accounts(:three)
-    @non_deletable_account = accounts(:non_deletable_account)
-    @inactive_account = accounts(:inactive_account)
-  end
-
   test 'returns all accounts when no filters are applied' do
     entity = AccountDataEntity.new
     result = entity.data
 
     assert_equal Account.count, result.size
-    assert_includes result.pluck(:id), @account1.id
-    assert_includes result.pluck(:id), @account2.id
-    assert_includes result.pluck(:id), @account3.id
-    assert_includes result.pluck(:id), @non_deletable_account.id
-    assert_includes result.pluck(:id), @inactive_account.id
+    assert_equal Account.pluck(:id).sort, result.pluck(:id).sort
   end
 
   test 'returns accounts for the specified users' do
-    entity = AccountDataEntity.new(user_ids: [@user1.id])
+    user = users(:one)
+    expected_accounts = user.accounts
+    assert_not_empty expected_accounts, 'User must have associted accounts for this test'
+
+    entity = AccountDataEntity.new(user_ids: [user.id])
     result = entity.data
 
-    assert_equal @user1.accounts.count, result.size
-    assert_includes result.pluck(:id), @account1.id
-    assert_includes result.pluck(:id), @account3.id
-    assert_includes result.pluck(:id), @non_deletable_account.id
+    assert_equal expected_accounts.pluck(:id).sort, result.pluck(:id).sort
   end
 
   test 'returns accounts of the specified types' do
-    entity = AccountDataEntity.new(account_types: ['credit card'])
+    entity = AccountDataEntity.new(account_types: ['liabilities'])
     result = entity.data
 
-    assert_equal 4, result.size
-    assert_includes result.pluck(:id), @account1.id
-    assert_includes result.pluck(:id), @account2.id
-    assert_includes result.pluck(:id), @account3.id
-    assert_includes result.pluck(:id), @inactive_account.id
+    expected_accounts = Account.where(account_type: 'liabilities')
+
+    assert_equal expected_accounts.size, result.size
+    assert_equal expected_accounts.pluck(:id).sort, result.pluck(:id).sort
   end
 
   test 'returns accounts that match both filters' do
-    entity = AccountDataEntity.new(user_ids: [@user1.id], account_types: ['credit card'])
+    user = users(:one)
+    expected_accounts = Account.where(user_id: user.id).where(account_type: 'assets')
+    assert_not_empty expected_accounts, 'Accounts with user and type are necessary for this test'
+
+    entity = AccountDataEntity.new(user_ids: [user.id], account_types: ['assets'])
     result = entity.data
 
-    assert_equal 3, result.size
-    assert_includes result.pluck(:id), @account1.id
-    assert_includes result.pluck(:id), @account3.id
-    assert_includes result.pluck(:id), @inactive_account.id
+    assert_equal expected_accounts.pluck(:id).sort, result.pluck(:id).sort
   end
 end

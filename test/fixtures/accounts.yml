@@ -21,7 +21,8 @@
 one:
   institution_name: Chase
   name: Freedom
-  account_type: credit card
+  account_type: liabilities
+  account_subtype: credit cards
   active: true
   deletable: true
   user: one
@@ -31,7 +32,8 @@ one:
 two:
   institution_name: Capital One
   name: Quicksilver
-  account_type: credit card
+  account_type: liabilities
+  account_subtype: credit cards
   active: true
   deletable: true
   user: two
@@ -40,7 +42,8 @@ two:
 three:
   institution_name: Chase
   name: Amazon
-  account_type: credit card
+  account_type: liabilities
+  account_subtype: credit cards
   active: true
   deletable: true
   user: one
@@ -48,7 +51,8 @@ three:
 
 non_deletable_account:
   name: Cash
-  account_type: Cash
+  account_type: assets
+  account_subtype: cash
   active: true
   deletable: false
   user: one
@@ -56,15 +60,16 @@ non_deletable_account:
 inactive_account:
   institution_name: Inactive bank
   name: Inactive account
-  account_type: credit card
+  account_type: liabilities
+  account_subtype: credit cards
   active: false
   deletable: true
   user: one
 
 plaid_credit_account:
   name: plaid account
-  account_type: credit
-  account_subtype: credit card
+  account_type: liabilities
+  account_subtype: credit cards
   active: true
   user: one
   plaid_account_id: plaid-credit-account-id
@@ -73,8 +78,8 @@ plaid_credit_account:
 
 plaid_savings_account:
   name: plaid account
-  account_type: depository
-  account_subtype: savings
+  account_type: assets
+  account_subtype: cash
   active: true
   user: one
   plaid_account_id: plaid-savings-account-id
