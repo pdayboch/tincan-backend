@@ -30,6 +30,13 @@ module PlaidServices
             type: 'credit',
             subtype: 'credit card',
             balances: Plaid::AccountBalance.new(current: 53.55)
+          ),
+          Plaid::AccountBase.new(
+            account_id: 'new-account2-id',
+            name: 'new investment',
+            type: 'investment',
+            subtype: 'brokerage',
+            balances: Plaid::AccountBalance.new(current: 1253.55)
           )
         ]
       )
@@ -40,16 +47,72 @@ module PlaidServices
 
       PlaidServices::SyncAccounts.new(item).call
 
-      new_account = item.reload.accounts.first
+      new_account = item.reload.accounts.find_by(plaid_account_id: 'new-account-id')
+      new_account2 = item.reload.accounts.find_by(plaid_account_id: 'new-account2-id')
 
       assert_not_nil new_account
       assert_equal item.user_id, new_account.user_id
       assert_equal item.id, new_account.plaid_item_id
       assert_equal 'new-account-id', new_account.plaid_account_id
       assert_equal 'new credit card', new_account.name
-      assert_equal 'credit', new_account.account_type
-      assert_equal 'credit card', new_account.account_subtype
+      assert_equal 'liabilities', new_account.account_type
+      assert_equal 'credit cards', new_account.account_subtype
       assert_equal 53.55, new_account.current_balance
+
+      assert_not_nil new_account2
+      assert_equal item.user_id, new_account2.user_id
+      assert_equal item.id, new_account2.plaid_item_id
+      assert_equal 'new-account2-id', new_account2.plaid_account_id
+      assert_equal 'new investment', new_account2.name
+      assert_equal 'assets', new_account2.account_type
+      assert_equal 'investments', new_account2.account_subtype
+      assert_equal 1253.55, new_account2.current_balance
+    end
+
+    test 'account creation logs and skips invalid account types' do
+      item = plaid_items(:no_accounts)
+
+      accounts_data = Plaid::AccountsGetResponse.new(
+        item: Plaid::Item.new(item_id: item.item_id),
+        accounts: [
+          Plaid::AccountBase.new(
+            account_id: 'new-account-id',
+            name: 'new credit card',
+            type: 'bad',
+            subtype: 'bad subtype',
+            balances: Plaid::AccountBalance.new(current: 53.55)
+          ),
+          Plaid::AccountBase.new(
+            account_id: 'new-account-id',
+            name: 'new investment',
+            type: 'depository',
+            subtype: 'checking',
+            balances: Plaid::AccountBalance.new(current: 1253.55)
+          )
+        ]
+      )
+
+      @mock_api.expects(:accounts)
+               .at_least_once
+               .returns(accounts_data)
+
+      Rails.logger.expects(:error).with('Unknown Plaid account type: bad. Skipping account creation.')
+
+      PlaidServices::SyncAccounts.new(item).call
+
+      bad_account = item.reload.accounts.find_by(plaid_account_id: 'bad-account-id')
+      new_account = item.reload.accounts.find_by(plaid_account_id: 'new-account-id')
+
+      assert_nil bad_account
+
+      assert_not_nil new_account
+      assert_equal item.user_id, new_account.user_id
+      assert_equal item.id, new_account.plaid_item_id
+      assert_equal 'new-account-id', new_account.plaid_account_id
+      assert_equal 'new investment', new_account.name
+      assert_equal 'assets', new_account.account_type
+      assert_equal 'cash', new_account.account_subtype
+      assert_equal 1253.55, new_account.current_balance
     end
 
     test 'correctly updates existing accounts' do

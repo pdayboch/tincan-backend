@@ -50,17 +50,21 @@ module PlaidServices
     end
 
     def create_account!(data)
+      mapped_types = Plaid::AccountTypeMapper.map(account_type(data))
+
       account_data = {
         plaid_account_id: plaid_account_id(data),
         name: name(data),
         current_balance: balance(data),
         user_id: @user.id,
         plaid_item_id: @item.id,
-        account_type: account_type(data),
-        account_subtype: account_subtype(data)
+        account_type: mapped_types[:type],
+        account_subtype: mapped_types[:subtype]
       }
 
       Account.create!(account_data)
+    rescue Plaid::AccountTypeMapper::InvalidAccountType => e
+      handle_invalid_account_type(e)
     end
 
     def local_account(data)
@@ -112,6 +116,10 @@ module PlaidServices
       raise error unless error.data['error_type'] == RATE_LIMIT_EXCEEDED
 
       raise PlaidApiRateLimitError
+    end
+
+    def handle_invalid_account_type(error)
+      Rails.logger.error("#{error.message}. Skipping account creation.")
     end
   end
 end
