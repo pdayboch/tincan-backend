@@ -44,8 +44,14 @@ class UserTest < ActiveSupport::TestCase
       email: 'test@email.com',
       password: 'pass'
     )
-    assert_includes user.accounts.map(&:name), 'Cash', 'Cash account not created on User creation'
-    assert_not user.accounts.find_by(name: 'Cash').deletable, 'Cash account marked as deletable'
+
+    cash_account = user.accounts.find_by(name: 'Cash')
+
+    assert_not_nil cash_account, 'Cash account not created on User creation'
+    assert_not cash_account.deletable, 'Cash account marked as deletable'
+    assert_equal '-', cash_account.institution_name
+    assert_equal 'assets', cash_account.account_type
+    assert_equal 'cash', cash_account.account_subtype
   end
 
   test 'should mark all accounts as deletable before user is destroyed' do

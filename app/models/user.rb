@@ -34,7 +34,9 @@ class User < ApplicationRecord
   def create_cash_account
     accounts.create!(
       name: 'Cash',
-      account_type: 'cash',
+      account_type: 'assets',
+      account_subtype: 'cash',
+      institution_name: '-',
       deletable: false
     )
   end
