@@ -46,6 +46,10 @@ module PlaidServices
         current_balance: balance(data),
         name: name(data)
       }
+
+      institution_name = @item.reload.institution_name
+      update_data[:institution_name] = institution_name if institution_name
+
       local_account(data).update(update_data)
     end
 
@@ -59,7 +63,9 @@ module PlaidServices
         user_id: @user.id,
         plaid_item_id: @item.id,
         account_type: mapped_types[:type],
-        account_subtype: mapped_types[:subtype]
+        account_subtype: mapped_types[:subtype],
+        institution_name: @item.reload.institution_name
+
       }
 
       Account.create!(account_data)
@@ -89,10 +95,6 @@ module PlaidServices
 
     def account_type(data)
       data.type
-    end
-
-    def account_subtype(data)
-      data.subtype
     end
 
     def missing_account_ids(accounts_data)

@@ -144,6 +144,33 @@ module PlaidServices
       assert_equal new_name, account.name
     end
 
+    test 'correctly syncs institution_name for existing accounts if nil' do
+      item = plaid_items(:with_multiple_accounts)
+      item.update(institution_name: 'a bank')
+      account = item.accounts.first
+
+      accounts_data = Plaid::AccountsGetResponse.new(
+        item: Plaid::Item.new(item_id: item.item_id),
+        accounts: [
+          Plaid::AccountBase.new(
+            account_id: account.plaid_account_id,
+            name: account.name,
+            type: account.account_type,
+            subtype: account.account_subtype,
+            balances: Plaid::AccountBalance.new(current: account.current_balance)
+          )
+        ]
+      )
+
+      @mock_api.expects(:accounts)
+               .at_least_once
+               .returns(accounts_data)
+
+      PlaidServices::SyncAccounts.new(item).call
+
+      assert_equal 'a bank', account.reload.institution_name
+    end
+
     test 'marks item accounts_synced_at after successful sync' do
       item = plaid_items(:new_item)
 
