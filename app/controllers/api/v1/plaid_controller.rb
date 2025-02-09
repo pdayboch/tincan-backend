@@ -23,7 +23,7 @@ module Api
         raise BadRequestError.new(public_token: [err_msg]) unless params[:public_token]
 
         result = PlaidServices::ItemCreate.new(params[:public_token], user).call
-        render json: { status: result }
+        render json: result.deep_transform_keys { |k| k.to_s.camelize(:lower) }
       rescue Plaid::ApiError
         render json: { error: 'Invalid request' }, status: :bad_request
       end

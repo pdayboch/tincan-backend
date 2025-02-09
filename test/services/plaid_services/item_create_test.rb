@@ -25,13 +25,38 @@ module PlaidServices
 
       PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
         assert_difference 'PlaidItem.count', 1 do
-          result = ItemCreate.new('test-public-token', user).call
-          assert result
+          ItemCreate.new('test-public-token', user).call
 
           plaid_item = PlaidItem.last
           assert_equal 'test-access-token', plaid_item.access_key
           assert_equal 'test-item-id', plaid_item.item_id
           assert_equal user.id, plaid_item.user_id
+        end
+      end
+    end
+
+    test 'returns the job ids of the enqueued jobs' do
+      details_job_id = SecureRandom.uuid
+      sync_accounts_job_id = SecureRandom.uuid
+      user = users(:one)
+      plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
+        access_token: 'test-access-token',
+        item_id: 'test-item-id'
+      )
+
+      Plaid::GetItemDetailsJob.stub(:perform_async, details_job_id) do
+        Plaid::SyncAccountsJob.stub(:perform_async, sync_accounts_job_id) do
+          PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
+            result = ItemCreate.new('test-public-token', user).call
+
+            assert_equal(
+              {
+                details_job_id: details_job_id,
+                sync_accounts_job_id: sync_accounts_job_id
+              },
+              result
+            )
+          end
         end
       end
     end

@@ -15,7 +15,6 @@ module PlaidServices
       token_exchange = PlaidServices::Api.public_token_exchange(@public_token)
       create_plaid_item(token_exchange)
       enqueue_jobs(token_exchange)
-      true
     end
 
     private
@@ -37,15 +36,17 @@ module PlaidServices
     end
 
     def enqueue_jobs(token_exchange)
-      enqueue_plaid_get_item_details_job(token_exchange.item_id)
-      enqueue_plaid_fetch_accounts_job(token_exchange.item_id)
+      {
+        details_job_id: enqueue_plaid_get_item_details_job(token_exchange.item_id),
+        sync_accounts_job_id: enqueue_plaid_sync_accounts_job(token_exchange.item_id)
+      }
     end
 
     def enqueue_plaid_get_item_details_job(item_id)
       Plaid::GetItemDetailsJob.perform_async(item_id)
     end
 
-    def enqueue_plaid_fetch_accounts_job(item_id)
+    def enqueue_plaid_sync_accounts_job(item_id)
       Plaid::SyncAccountsJob.perform_async(item_id)
     end
 
