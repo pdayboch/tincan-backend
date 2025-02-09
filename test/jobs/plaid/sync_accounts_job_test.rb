@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Plaid
-  class FetchAccountsJobTest < ActiveSupport::TestCase
+  class SyncAccountsJobTest < ActiveSupport::TestCase
     test 'processes items with accounts_synced_at nil' do
       item = plaid_items(:accounts_synced_nil)
 
@@ -20,7 +20,7 @@ module Plaid
                                 .at_least_once
                                 .returns(true)
 
-      Plaid::FetchAccountsJob.new.perform
+      Plaid::SyncAccountsJob.new.perform
     end
 
     test 'processes items with accounts_synced_at older than 24 hours' do
@@ -39,7 +39,7 @@ module Plaid
                                 .at_least_once
                                 .returns(true)
 
-      Plaid::FetchAccountsJob.new.perform
+      Plaid::SyncAccountsJob.new.perform
     end
 
     test 'processes only override_item_ids when specified' do
@@ -59,7 +59,7 @@ module Plaid
       mock_sync_accounts_service.expects(:call)
                                 .returns(true)
 
-      Plaid::FetchAccountsJob.new.perform([process_item.item_id])
+      Plaid::SyncAccountsJob.new.perform([process_item.item_id])
     end
 
     test 'halts processing when plaid rate limit exceeded' do
@@ -72,7 +72,7 @@ module Plaid
 
       Rails.logger.expects(:warn).with('Plaid API rate limit exceeded. Stopping job.')
 
-      Plaid::FetchAccountsJob.new.perform
+      Plaid::SyncAccountsJob.new.perform
     end
 
     test 'raises exception for plaid api error other than rate limit exceeded' do
@@ -87,7 +87,7 @@ module Plaid
                                 .raises(some_error)
 
       assert_raises Plaid::ApiError do
-        Plaid::FetchAccountsJob.new.perform
+        Plaid::SyncAccountsJob.new.perform
       end
     end
   end

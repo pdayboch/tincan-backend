@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Plaid
-  class FetchAccountsJob
+  class SyncAccountsJob
     include Sidekiq::Worker
     include Sidekiq::Status::Worker
 

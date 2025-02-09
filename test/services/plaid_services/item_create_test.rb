@@ -54,7 +54,7 @@ module PlaidServices
       assert_includes job_args, 'test-item-id'
     end
 
-    test 'successfully enqueues Plaid::FetchAccountsJob with correct item_id' do
+    test 'successfully enqueues Plaid::SyncAccountsJob with correct item_id' do
       user = users(:one)
       plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
         {
@@ -67,8 +67,8 @@ module PlaidServices
         ItemCreate.new('test-public-token', user).call
       end
 
-      assert_equal 1, Plaid::FetchAccountsJob.jobs.size, 'Expected one job to be enqueued'
-      job_args = Plaid::FetchAccountsJob.jobs.first['args']
+      assert_equal 1, Plaid::SyncAccountsJob.jobs.size, 'Expected one job to be enqueued'
+      job_args = Plaid::SyncAccountsJob.jobs.first['args']
       assert_includes job_args, 'test-item-id'
     end
 

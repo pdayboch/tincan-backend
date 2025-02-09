@@ -46,7 +46,7 @@ module PlaidServices
     end
 
     def enqueue_plaid_fetch_accounts_job(item_id)
-      Plaid::FetchAccountsJob.perform_async(item_id)
+      Plaid::SyncAccountsJob.perform_async(item_id)
     end
 
     # We need to make sure we destroy any Plaid Items on error before we lose
