@@ -100,6 +100,8 @@ GEM
     builder (3.3.0)
     case_transform (0.2)
       activesupport
+    chronic_duration (0.10.6)
+      numerizer (~> 0.1.1)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.0)
     crass (1.0.6)
@@ -168,6 +170,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.1-x86_64-linux-gnu)
       racc (~> 1.4)
+    numerizer (0.1.1)
     ostruct (0.6.1)
     parallel (1.26.3)
     parser (3.3.7.0)
@@ -274,6 +277,9 @@ GEM
       logger
       rack (>= 2.2.4)
       redis-client (>= 0.22.2)
+    sidekiq-status (3.0.3)
+      chronic_duration
+      sidekiq (>= 6.0, < 8)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -329,6 +335,7 @@ DEPENDENCIES
   rubocop-rails
   ruby-lsp
   sidekiq
+  sidekiq-status
   simplecov
   timecop
   tzinfo-data

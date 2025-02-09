@@ -3,6 +3,8 @@
 module Plaid
   class GetItemDetailsJob
     include Sidekiq::Worker
+    include Sidekiq::Status::Worker
+
     queue_as :default
     sidekiq_options retry: 5
 

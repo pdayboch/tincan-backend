@@ -3,6 +3,8 @@
 module Plaid
   class FetchAccountsJob
     include Sidekiq::Worker
+    include Sidekiq::Status::Worker
+
     sidekiq_options retry: 2
 
     SYNC_PERIOD = 24.hours
