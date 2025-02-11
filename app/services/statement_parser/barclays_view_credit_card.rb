@@ -2,9 +2,10 @@
 
 module StatementParser
   class BarclaysViewCreditCard < Base
-    BANK_NAME = 'Barclays'
+    INSTITUTION_NAME = 'Barclays'
     ACCOUNT_NAME = 'View Credit Card'
-    ACCOUNT_TYPE = 'credit card'
+    ACCOUNT_TYPE = 'liabilities'
+    ACCOUNT_SUBTYPE = 'credit cards'
 
     def statement_end_date
       @statement_end_date ||= begin

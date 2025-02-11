@@ -55,9 +55,10 @@ class AccountTest < ActiveSupport::TestCase
     user = users(:one)
     account = Account.create(
       user_id: user.id,
-      institution_name: StatementParser::MockStatementParser::BANK_NAME,
+      institution_name: StatementParser::MockStatementParser::INSTITUTION_NAME,
       name: StatementParser::MockStatementParser::ACCOUNT_NAME,
       account_type: StatementParser::MockStatementParser::ACCOUNT_TYPE,
+      account_subtype: StatementParser::MockStatementParser::ACCOUNT_SUBTYPE,
       parser_class: 'MockStatementParser'
     )
 
@@ -74,9 +75,10 @@ class AccountTest < ActiveSupport::TestCase
     user = users(:one)
     account = Account.create(
       user_id: user.id,
-      institution_name: StatementParser::MockStatementParser::BANK_NAME,
+      institution_name: StatementParser::MockStatementParser::INSTITUTION_NAME,
       name: StatementParser::MockStatementParser::ACCOUNT_NAME,
-      account_type: StatementParser::MockStatementParser::ACCOUNT_TYPE
+      account_type: StatementParser::MockStatementParser::ACCOUNT_TYPE,
+      account_subtype: StatementParser::MockStatementParser::ACCOUNT_SUBTYPE
     )
 
     parser = account.statement_parser('dummy/path')

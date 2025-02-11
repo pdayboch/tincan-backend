@@ -19,7 +19,8 @@ class SupportedAccountsEntityTest < ActiveSupport::TestCase
         accountProvider: 'MockStatementParser',
         institutionName: 'Dummy Bank',
         accountName: 'Dummy Account',
-        accountType: 'dummy type'
+        accountType: 'assets',
+        accountSubtype: 'cash'
       }
     ]
 

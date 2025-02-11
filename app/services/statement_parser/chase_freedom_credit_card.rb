@@ -2,9 +2,10 @@
 
 module StatementParser
   class ChaseFreedomCreditCard < Base
-    BANK_NAME = 'Chase'
+    INSTITUTION_NAME = 'Chase'
     ACCOUNT_NAME = 'Freedom Credit Card'
-    ACCOUNT_TYPE = 'credit card'
+    ACCOUNT_TYPE = 'liabilities'
+    ACCOUNT_SUBTYPE = 'credit cards'
 
     def statement_end_date
       @statement_end_date ||= begin

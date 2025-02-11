@@ -2,9 +2,10 @@
 
 module StatementParser
   class MockStatementParser < Base
-    BANK_NAME = 'Dummy Bank'
+    INSTITUTION_NAME = 'Dummy Bank'
     ACCOUNT_NAME = 'Dummy Account'
-    ACCOUNT_TYPE = 'dummy type'
+    ACCOUNT_TYPE = 'assets'
+    ACCOUNT_SUBTYPE = 'cash'
 
     def statement_end_date
       Date.new(2023, 1, 31)

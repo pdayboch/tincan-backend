@@ -19,7 +19,8 @@ module AccountServices
         assert result.id.present?
         assert_equal 'Dummy Bank', result.institution_name
         assert_equal 'Dummy Account', result.name
-        assert_equal 'dummy type', result.account_type
+        assert_equal 'assets', result.account_type
+        assert_equal 'cash', result.account_subtype
       end
     end
 

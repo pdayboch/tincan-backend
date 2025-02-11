@@ -5,9 +5,10 @@ class SupportedAccountsEntity
     StatementParser::Base.descendants.map do |parser_class|
       {
         accountProvider: SupportedAccountsEntity.provider_from_class(parser_class),
-        institutionName: parser_class::BANK_NAME,
+        institutionName: parser_class::INSTITUTION_NAME,
         accountName: parser_class::ACCOUNT_NAME,
-        accountType: parser_class::ACCOUNT_TYPE
+        accountType: parser_class::ACCOUNT_TYPE,
+        accountSubtype: parser_class::ACCOUNT_SUBTYPE
       }
     end
   end

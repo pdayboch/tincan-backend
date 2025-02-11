@@ -2,9 +2,10 @@
 
 module StatementParser
   class CharlesSchwabBrokerage < Base
-    BANK_NAME = 'Charles Schwab'
+    INSTITUTION_NAME = 'Charles Schwab'
     ACCOUNT_NAME = 'Brokerage'
-    ACCOUNT_TYPE = 'investment'
+    ACCOUNT_TYPE = 'assets'
+    ACCOUNT_SUBTYPE = 'investments'
 
     ALL_MONTHS = 'January|February|March|April|May|June|July|August|September|October|November|December'
 

@@ -2,9 +2,10 @@
 
 module StatementParser
   class CharlesSchwabChecking < Base
-    BANK_NAME = 'Charles Schwab'
+    INSTITUTION_NAME = 'Charles Schwab'
     ACCOUNT_NAME = 'Checking'
-    ACCOUNT_TYPE = 'checking'
+    ACCOUNT_TYPE = 'assets'
+    ACCOUNT_SUBTYPE = 'cash'
 
     ALL_MONTHS = 'January|February|March|April|May|June|July|August|September|October|November|December'
     DEBIT_KEYWORDS = [

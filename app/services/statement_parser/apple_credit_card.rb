@@ -2,9 +2,10 @@
 
 module StatementParser
   class AppleCreditCard < Base
-    BANK_NAME = 'Apple'
+    INSTITUTION_NAME = 'Apple'
     ACCOUNT_NAME = 'Credit Card'
-    ACCOUNT_TYPE = 'credit card'
+    ACCOUNT_TYPE = 'liabilities'
+    ACCOUNT_SUBTYPE = 'credit cards'
 
     def statement_end_date
       @statement_end_date ||= begin

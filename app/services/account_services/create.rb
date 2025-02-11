@@ -12,9 +12,10 @@ module AccountServices
     def call
       parser_class = SupportedAccountsEntity.class_from_provider(@account_provider)
       account = Account.new(
-        institution_name: parser_class::BANK_NAME,
+        institution_name: parser_class::INSTITUTION_NAME,
         name: parser_class::ACCOUNT_NAME,
         account_type: parser_class::ACCOUNT_TYPE,
+        account_subtype: parser_class::ACCOUNT_SUBTYPE,
         active: @active,
         user_id: @user_id,
         statement_directory: @statement_directory,
