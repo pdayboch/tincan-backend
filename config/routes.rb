@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       post '/plaid/create-link-token', to: 'plaid#create_link_token'
       post '/plaid/set-access-token', to: 'plaid#set_access_token'
+      get '/plaid/item-initialization-job-statuses', to: 'plaid#item_initialization_job_statuses'
     end
   end
 

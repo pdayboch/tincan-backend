@@ -21,7 +21,7 @@ module Api
         }
 
         error_resp = { 'errors' => [
-          { 'field' => 'publicToken', 'message' => 'publicToken is required' }
+          { 'field' => 'publicToken', 'message' => 'is required' }
         ] }
         assert_equal error_resp, response.parsed_body
         assert_response :bad_request
@@ -46,7 +46,7 @@ module Api
         assert_response :ok
       end
 
-      test 'retuns bad_request on Plaid ApiError' do
+      test 'returns bad request on Plaid ApiError' do
         user = users(:one)
         server_error = Plaid::ApiError.new(
           response_body: {
