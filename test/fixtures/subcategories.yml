@@ -16,6 +16,10 @@ restaurant:
   name: Restaurants
   category: spend
 
+fast_food:
+  name: "Fast Food"
+  category: food
+
 cash_and_atm:
   name: "Cash and Atm"
   category: transfer

@@ -13,12 +13,16 @@ income:
   category_type: income
 
 spend:
-  name: "Food & Dining"
+  name: "Some Spending Category"
   category_type: spend
 
 transfer:
   name: Transfer
   category_type: transfer
+
+food:
+  name: Food
+  category_type: spend
 
 auto_transport:
   name: "Auto & Transport"

@@ -12,7 +12,6 @@ module PlaidServices
           account_id: account.plaid_account_id,
           amount: 6.33,
           authorized_date: Date.new(2025, 1, 1),
-          category: %w[Travel Taxi],
           date: Date.new(2025, 1, 2),
           name: 'Uber 072515 SF**POOL**',
           pending: false,
@@ -32,6 +31,7 @@ module PlaidServices
         assert_equal 6.33, saved_transaction.amount
         assert_equal Date.new(2025, 1, 1), saved_transaction.transaction_date
         assert_equal Date.new(2025, 1, 1), saved_transaction.statement_transaction_date
+        assert_equal 'Uncategorized', saved_transaction.subcategory.name
         assert_not saved_transaction.pending
       end
 
@@ -42,7 +42,6 @@ module PlaidServices
           {
             account_id: account.plaid_account_id,
             amount: 5.4,
-            category: ['Food and Drink', 'Restaurants'],
             date: Date.new(2024, 2, 23),
             name: "McDonald's",
             pending: true,
@@ -60,10 +59,68 @@ module PlaidServices
         assert_equal 5.4, saved_transaction.amount
         assert_equal Date.new(2024, 2, 23), saved_transaction.transaction_date
         assert_equal Date.new(2024, 2, 23), saved_transaction.statement_transaction_date
+        assert_equal 'Uncategorized', saved_transaction.subcategory.name
         assert saved_transaction.pending
       end
 
-      test 'Raises RecordNotUnique when creating duplicate plaid_transaction_id' do
+      test 'creates transaction with category when plaid personal_finance_category set' do
+        item = plaid_items(:with_multiple_accounts)
+        account = item.accounts.first
+        transaction = Plaid::Transaction.new(
+          {
+            account_id: account.plaid_account_id,
+            amount: 5.4,
+            authorized_date: Date.new(2024, 2, 23),
+            name: "McDonald's",
+            pending: false,
+            transaction_id: 'transaction-id',
+            personal_finance_category: Plaid::PersonalFinanceCategory.new(
+              primary: 'FOOD_AND_DRINK',
+              detailed: 'FOOD_AND_DRINK_FAST_FOOD',
+              confidence_level: 'VERY_HIGH'
+            )
+          }
+        )
+
+        CreateService.new(account, transaction).call
+        saved_transaction = account.transactions.find_by(plaid_transaction_id: 'transaction-id')
+        fast_food = subcategories(:fast_food)
+
+        assert_equal fast_food.id, saved_transaction.subcategory_id
+      end
+
+      test 'uses category_mapper instance if passed in as option' do
+        item = plaid_items(:with_multiple_accounts)
+        account = item.accounts.first
+        transaction = Plaid::Transaction.new(
+          {
+            account_id: account.plaid_account_id,
+            amount: 5.4,
+            authorized_date: Date.new(2024, 2, 23),
+            name: "McDonald's",
+            pending: false,
+            transaction_id: 'transaction-id',
+            personal_finance_category: Plaid::PersonalFinanceCategory.new(
+              primary: 'FOOD_AND_DRINK',
+              detailed: 'FOOD_AND_DRINK_FAST_FOOD',
+              confidence_level: 'VERY_HIGH'
+            )
+          }
+        )
+
+        fast_food = subcategories(:fast_food)
+        mapper = Plaid::CategoryMapper.new
+        mapper.expects(:map)
+              .with('FOOD_AND_DRINK_FAST_FOOD')
+              .returns([fast_food.category, fast_food])
+
+        CreateService.new(account, transaction, category_mapper: mapper).call
+        saved_transaction = account.transactions.find_by(plaid_transaction_id: 'transaction-id')
+
+        assert_equal fast_food.id, saved_transaction.subcategory_id
+      end
+
+      test 'raises RecordNotUnique when creating duplicate plaid_transaction_id' do
         item = plaid_items(:with_multiple_accounts)
         account = item.accounts.first
         account.transactions.create(
