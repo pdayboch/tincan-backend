@@ -49,6 +49,7 @@ group :development do
 end
 
 group :test do
+  gem 'byebug', require: true
   gem 'mocha'
   gem 'simplecov', require: false
   gem 'timecop'
