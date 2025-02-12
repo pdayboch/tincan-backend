@@ -20,6 +20,10 @@ transfer:
   name: Transfer
   category_type: transfer
 
+auto_transport:
+  name: "Auto & Transport"
+  category_type: spend
+
 unused_category:
   name: Unused
   category_type: spend

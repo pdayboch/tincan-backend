@@ -20,6 +20,10 @@ cash_and_atm:
   name: "Cash and Atm"
   category: transfer
 
+gas_fuel:
+  name: "Gas & Fuel"
+  category: auto_transport
+
 unused_subcategory:
   name: Unused
   category: unused_category
