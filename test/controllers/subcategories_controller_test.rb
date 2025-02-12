@@ -21,22 +21,21 @@ class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal false, json_response['hasTransactions']
   end
 
-  test 'should raise error on create with duplicate name' do
+  test 'should return error on create with empty name' do
     category = categories(:spend)
-    existing_subcategory = subcategories(:restaurant)
-
     assert_no_difference('Subcategory.count') do
       post subcategories_url, params: {
         category_id: category.id,
-        name: existing_subcategory.name
+        name: ''
       }
     end
 
     assert_response :unprocessable_entity
+
     json_response = response.parsed_body
     expected_error = {
       'field' => 'name',
-      'message' => 'name already exists'
+      'message' => "name can't be blank"
     }
     assert_includes json_response['errors'], expected_error
   end
@@ -50,19 +49,18 @@ class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test 'should raise error on update with duplicate name' do
+  test 'should return error on update with empty name' do
     subcategory = subcategories(:paycheck)
-    other_subcategory = subcategories(:restaurant)
 
     put subcategory_url(subcategory), params: {
-      name: other_subcategory.name
+      name: ''
     }
 
     assert_response :unprocessable_entity
     json_response = response.parsed_body
     expected_error = {
       'field' => 'name',
-      'message' => 'name already exists'
+      'message' => "name can't be blank"
     }
     assert_includes json_response['errors'], expected_error
   end

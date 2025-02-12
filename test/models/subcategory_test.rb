@@ -13,13 +13,23 @@
 require 'test_helper'
 
 class SubcategoryTest < ActiveSupport::TestCase
-  test 'should not save duplicate subcategory names' do
+  test 'should not create subcategory with empty name' do
     category = categories(:spend)
-    Subcategory.create(name: 'UniqueName', category_id: category.id)
-    duplicate_subcategory = Subcategory.new(name: 'UniqueName', category_id: category.id)
 
-    assert_not duplicate_subcategory.valid?, 'Duplicate category should not be valid'
-    assert_includes duplicate_subcategory.errors[:name], 'already exists'
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      Subcategory.create!(category_id: category.id, name: '')
+    end
+
+    assert_equal  "Validation failed: Name can't be blank", error.message
+  end
+
+  test 'should not update subcategory with empty name' do
+    subcategory = subcategories(:restaurant)
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      subcategory.update!(name: '')
+    end
+
+    assert_equal "Validation failed: Name can't be blank", error.message
   end
 
   test 'should not delete subcategory with transactions' do

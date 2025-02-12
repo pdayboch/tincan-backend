@@ -14,6 +14,5 @@ class Subcategory < ApplicationRecord
   belongs_to :category
   has_many :transactions, dependent: :restrict_with_exception
 
-  # Validates that the name is unique
-  validates :name, uniqueness: { message: 'already exists' }
+  validates :name, presence: true
 end
