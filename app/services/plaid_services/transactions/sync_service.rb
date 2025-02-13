@@ -3,8 +3,9 @@
 module PlaidServices
   module Transactions
     class SyncService
-      def initialize(plaid_item)
+      def initialize(plaid_item, category_mapper: nil)
         @item = plaid_item
+        @category_mapper = category_mapper || ::Plaid::CategoryMapper.new
       end
 
       def call
@@ -33,7 +34,7 @@ module PlaidServices
 
       def create_transactions(account, transactions)
         transactions.each do |t|
-          CreateService.new(account, t).call
+          CreateService.new(account, t, category_mapper: @category_mapper).call
         rescue ActiveRecord::RecordNotUnique
           error_msg = 'Transactions::Sync attempted to create transaction with a ' \
                       "duplicate plaid_transaction_id: #{t.transaction_id} in account: " \
