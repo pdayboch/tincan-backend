@@ -10,6 +10,8 @@ module PlaidServices
 
       def call
         transactions_data = fetch_transactions_data
+        return if transactions_data.nil?
+
         handle_added(transactions_data)
         handle_modified(transactions_data)
         handle_removed(transactions_data)
@@ -99,9 +101,20 @@ module PlaidServices
       end
 
       def handle_api_error(error)
-        raise error unless error.data['error_type'] == Plaid::ApiRateLimitError::ERROR_TYPE
+        case error.data['error_type']
+        when Plaid::ApiRateLimitError::ERROR_TYPE
+          raise Plaid::ApiRateLimitError
+        end
 
-        raise Plaid::ApiRateLimitError
+        case error.data['error_code']
+        when 'NO_ACCOUNTS'
+          msg = 'Transactions::Sync - no accounts available to sync ' \
+                "transactions on PlaidItem: #{@item.item_id}"
+          Rails.logger.warn(msg)
+          return nil
+        end
+
+        raise error
       end
     end
   end

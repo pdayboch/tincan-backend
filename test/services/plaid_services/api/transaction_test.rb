@@ -225,7 +225,7 @@ module PlaidServices
                    .times(Api::MAX_RETRIES)
                    .in_sequence(sync_sequence)
 
-      assert_raises(Api::TransactionSyncError) do
+      assert_raises(Plaid::ApiError) do
         service.transactions_sync('next-cursor')
       end
     end

@@ -3,8 +3,6 @@
 module PlaidServices
   class Api
     module Transaction
-      class TransactionSyncError < StandardError; end
-
       def transactions_sync(initial_cursor = nil)
         cursor = initial_cursor || ''
         original_cursor = nil
@@ -46,7 +44,7 @@ module PlaidServices
             retry
           end
 
-          raise TransactionSyncError, 'Failed to sync transactions.'
+          raise e
         end
       end
 

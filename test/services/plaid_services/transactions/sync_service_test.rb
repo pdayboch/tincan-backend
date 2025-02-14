@@ -57,6 +57,25 @@ module PlaidServices
         end
       end
 
+      test 'logs warning on Plaid::ApiError NO_ACCOUNTS error code' do
+        item = plaid_items(:new_item)
+
+        api_error = Plaid::ApiError.new(
+          data: {
+            'error_type' => 'ITEM_ERROR',
+            'error_code' => 'NO_ACCOUNTS'
+          }
+        )
+        @mock_api.expects(:transactions_sync)
+                 .raises(api_error)
+
+        msg = 'Transactions::Sync - no accounts available to sync ' \
+              "transactions on PlaidItem: #{item.item_id}"
+        Rails.logger.expects(:warn).with(msg)
+
+        SyncService.new(item).call
+      end
+
       test 'raises exception for non-rate limit errors' do
         item = plaid_items(:new_item)
 
