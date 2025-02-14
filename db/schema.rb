@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_14_135557) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_14_142441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -64,6 +64,20 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_14_135557) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_categorization_rules_on_category_id"
     t.index ["subcategory_id"], name: "index_categorization_rules_on_subcategory_id"
+  end
+
+  create_table "plaid_item_audits", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "item_id"
+    t.string "institution_id"
+    t.text "billed_products", default: [], array: true
+    t.text "products", default: [], array: true
+    t.text "consented_data_scopes", default: [], array: true
+    t.datetime "audit_created_at", null: false
+    t.string "audit_op", null: false
+    t.index ["audit_created_at"], name: "index_plaid_item_audits_on_audit_created_at"
+    t.index ["audit_op"], name: "index_plaid_item_audits_on_audit_op"
+    t.index ["item_id"], name: "index_plaid_item_audits_on_item_id"
   end
 
   create_table "plaid_items", force: :cascade do |t|
