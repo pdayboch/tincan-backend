@@ -45,7 +45,29 @@ module PlaidServices
       end
 
       def handle_modified(transactions_data)
-        # TODO
+        transactions_data[:modified].group_by(&:account_id).each do |account_id, transactions|
+          account = @item.accounts.find_by(plaid_account_id: account_id)
+          if account.nil?
+            error_msg = "Account: #{account_id} not found when attempting to modify transactions " \
+                        "with IDs: #{transactions.map(&:transaction_id).join(', ')}"
+            Rails.logger.error(error_msg)
+            next
+          end
+
+          modify_transactions(account, transactions)
+        end
+      end
+
+      def modify_transactions(account, transactions)
+        transactions.each do |t|
+          ModifyService.new(account, t, category_mapper: @category_mapper).call
+        rescue ActiveRecord::RecordNotFound
+          error_msg = 'Transactions::Sync attempted to modify a transaction with a ' \
+                      "missing plaid_transaction_id: #{t.transaction_id} in account: " \
+                      "#{account.id}. Modify was skipped."
+          Rails.logger.error(error_msg)
+          next
+        end
       end
 
       def handle_removed(transactions_data)
