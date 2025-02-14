@@ -21,6 +21,9 @@ module Plaid
     def update_item!
       @item.institution_id = item_details.institution_id
       @item.institution_name = institution_details.name
+      @item.billed_products = item_details.billed_products
+      @item.products = item_details.products
+      @item.consented_data_scopes = item_details.consented_data_scopes
       @item.save!
     end
 

@@ -18,7 +18,10 @@ module Plaid
         item: Plaid::ItemWithConsentFields.new(
           {
             item_id: item.id,
-            institution_id: institution_id
+            institution_id: institution_id,
+            billed_products: ['transactions'],
+            products: %w[transactions investments],
+            consented_data_scopes: ['account_and_balance_info']
           }
         )
       )
@@ -37,13 +40,19 @@ module Plaid
         item.reload.attributes.except(
           'institution_id',
           'institution_name',
+          'billed_products',
+          'products',
+          'consented_data_scopes',
           'updated_at'
         )
       } do
         Plaid::GetItemDetailsJob.new.perform(item.item_id)
       end
       assert_equal institution_id, item.reload.institution_id
-      assert_equal 'test bank', item.reload.institution_name
+      assert_equal 'test bank', item.institution_name
+      assert_equal ['transactions'], item.billed_products
+      assert_equal %w[transactions investments], item.products
+      assert_equal ['account_and_balance_info'], item.consented_data_scopes
     end
 
     test 'syncs institution_name to accounts if any' do
