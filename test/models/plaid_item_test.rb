@@ -4,20 +4,22 @@
 #
 # Table name: plaid_items
 #
-#  id                      :bigint           not null, primary key
-#  user_id                 :bigint           not null
-#  access_key              :string           not null
-#  item_id                 :string
-#  institution_id          :string
-#  transaction_sync_cursor :string
-#  transactions_synced_at  :datetime
-#  accounts_synced_at      :datetime
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  institution_name        :string
-#  billed_products         :text             default([]), is an Array
-#  products                :text             default([]), is an Array
-#  consented_data_scopes   :text             default([]), is an Array
+#  id                                  :bigint           not null, primary key
+#  user_id                             :bigint           not null
+#  access_key                          :string           not null
+#  item_id                             :string
+#  institution_id                      :string
+#  transaction_sync_cursor             :string
+#  transactions_synced_at              :datetime
+#  accounts_synced_at                  :datetime
+#  created_at                          :datetime         not null
+#  updated_at                          :datetime         not null
+#  institution_name                    :string
+#  billed_products                     :text             default([]), is an Array
+#  products                            :text             default([]), is an Array
+#  consented_data_scopes               :text             default([]), is an Array
+#  investment_transactions_synced_at   :datetime
+#  investment_transactions_sync_cursor :string
 #
 require 'test_helper'
 
