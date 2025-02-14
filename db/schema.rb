@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_12_160809) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_14_135557) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -77,6 +77,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_12_160809) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "institution_name"
+    t.text "billed_products", default: [], array: true
+    t.text "products", default: [], array: true
+    t.text "consented_data_scopes", default: [], array: true
     t.index ["accounts_synced_at"], name: "index_plaid_items_on_accounts_synced_at"
     t.index ["item_id"], name: "index_plaid_items_on_item_id", unique: true
     t.index ["transactions_synced_at"], name: "index_plaid_items_on_transactions_synced_at"

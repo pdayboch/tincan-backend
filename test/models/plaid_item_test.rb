@@ -15,6 +15,9 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  institution_name        :string
+#  billed_products         :text             default([]), is an Array
+#  products                :text             default([]), is an Array
+#  consented_data_scopes   :text             default([]), is an Array
 #
 require 'test_helper'
 
