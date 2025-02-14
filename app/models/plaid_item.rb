@@ -23,7 +23,19 @@ class PlaidItem < ApplicationRecord
   belongs_to :user
   has_many :accounts, dependent: :nullify
 
+  after_create :create_audit_record
+  after_update :update_audit_record
   before_destroy :remove_item_from_plaid
+  after_destroy :destroy_audit_record
+
+  AUDITED_ATTRS = %w[
+    user_id
+    item_id
+    institution_id
+    billed_products
+    products
+    consented_data_scopes
+  ].freeze
 
   ITEM_NOT_FOUND_ERROR = 'ITEM_NOT_FOUND'
 
@@ -33,6 +45,50 @@ class PlaidItem < ApplicationRecord
 
   def mark_transactions_as_synced
     update(transactions_synced_at: Time.zone.now)
+  end
+
+  private
+
+  def create_audit_record
+    Plaid::ItemAudit.create!(
+      user_id: user_id,
+      item_id: item_id,
+      institution_id: institution_id,
+      billed_products: billed_products,
+      products: products,
+      consented_data_scopes: consented_data_scopes,
+      audit_op: :created,
+      audit_created_at: Time.current
+    )
+  end
+
+  def update_audit_record
+    # Only create audit record if tracked attributes changed
+    return unless previous_changes.keys.intersect?(AUDITED_ATTRS)
+
+    Plaid::ItemAudit.create!(
+      user_id: user_id,
+      item_id: item_id,
+      institution_id: institution_id,
+      billed_products: billed_products,
+      products: products,
+      consented_data_scopes: consented_data_scopes,
+      audit_op: :modified,
+      audit_created_at: Time.current
+    )
+  end
+
+  def destroy_audit_record
+    Plaid::ItemAudit.create!(
+      user_id: user_id,
+      item_id: item_id,
+      institution_id: institution_id,
+      billed_products: billed_products,
+      products: products,
+      consented_data_scopes: consented_data_scopes,
+      audit_op: :deleted,
+      audit_created_at: Time.current
+    )
   end
 
   def remove_item_from_plaid

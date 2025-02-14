@@ -61,3 +61,12 @@ no_accounts:
   institution_id: ins_2345
   accounts_synced_at: <%= 1.hour.ago %>
   transactions_synced_at: <%= 1.hour.ago %>
+
+with_products:
+  user: one
+  access_key: seven-access-key
+  item_id: seven-item-id
+  institution_id: ins_123
+  billed_products: ["transactions"]
+  products: ["transactions", "investments"]
+  consented_data_scopes: ["investments", "account_balance_info", "transactions"]

@@ -88,4 +88,77 @@ class PlaidItemTest < ActiveSupport::TestCase
       end
     end
   end
+
+  # AUDIT TESTS
+  test 'creating item creates correct audit' do
+    user = users(:one)
+
+    Timecop.freeze do
+      time_now = Time.current
+
+      assert_difference 'Plaid::ItemAudit.count', 1 do
+        PlaidItem.create!(
+          user_id: user.id,
+          item_id: 'item-id',
+          institution_id: 'ins-123',
+          access_key: 'access-key'
+        )
+      end
+
+      audit = Plaid::ItemAudit.where(item_id: 'item-id')
+                              .order(audit_created_at: :desc)
+                              .first
+      assert_equal time_now, audit.audit_created_at
+      assert_equal user.id, audit.user_id
+      assert_equal 'item-id', audit.item_id
+      assert_equal 'ins-123', audit.institution_id
+    end
+  end
+
+  test 'updating item creates correct audit' do
+    item = plaid_items(:new_item)
+    item.institution_id = 'ins-123'
+    item.billed_products = ['transactions']
+
+    assert_difference 'Plaid::ItemAudit.count', 1 do
+      item.save!
+    end
+
+    audit = Plaid::ItemAudit.where(item_id: item.item_id)
+                            .order(audit_created_at: :desc)
+                            .first
+    assert_equal 'ins-123', audit.institution_id
+    assert_equal ['transactions'], audit.billed_products
+    assert_equal item.item_id, audit.item_id
+  end
+
+  test 'updating item non-audited attributes does not create audit' do
+    item = plaid_items(:new_item)
+
+    assert_no_difference 'Plaid::ItemAudit.count' do
+      item.mark_transactions_as_synced
+    end
+  end
+
+  test 'destroying item creates correct audit' do
+    item = plaid_items(:with_products)
+
+    item_remove_response = Plaid::ItemRemoveResponse.new(request_id: 'abcd')
+    api = mock('plaid-api')
+    PlaidServices::Api.stubs(:new).returns(api)
+    api.expects(:destroy).returns(item_remove_response)
+
+    assert_difference 'Plaid::ItemAudit.count', 1 do
+      item.destroy
+    end
+
+    audit = Plaid::ItemAudit.where(item_id: item.item_id)
+                            .order(audit_created_at: :desc)
+                            .first
+    assert_equal item.item_id, audit.item_id
+    assert_equal item.institution_id, audit.institution_id
+    assert_equal item.billed_products, audit.billed_products
+    assert_equal item.products, audit.products
+    assert_equal item.consented_data_scopes, audit.consented_data_scopes
+  end
 end
