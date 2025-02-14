@@ -29,22 +29,36 @@ just_synced:
   user: one
   access_key: two-access-key
   item_id: two-item-id
-  accounts_synced_at: <%= 1.hour.ago %>
-  transactions_synced_at: <%= 1.hour.ago %>
+  accounts_synced_at: <%= 1.minute.ago %>
+  transactions_synced_at: <%= 1.minute.ago %>
 
 accounts_synced_nil:
   user: one
   access_key: three-access-key
   item_id: three-item-id
   accounts_synced_at:
-  transactions_synced_at: <%= 2.days.ago %>
+  transactions_synced_at:
 
 accounts_synced_older_24_h:
   user: one
   access_key: four-access-key
   item_id: four-item-id
   accounts_synced_at: <%= 25.hours.ago %>
-  transactions_synced_at: <%= 2.days.ago %>
+  transactions_synced_at: <%= 2.hours.ago %>
+
+transactions_synced_nil:
+  user: one
+  access_key: transactions-synced-nil-access-key
+  item_id: transactions-synced-nil-id
+  accounts_synced_at: <%= 3.hours.ago %>
+  transactions_synced_at:
+
+transactions_synced_older_6_h:
+  user: one
+  access_key: transactions-synced-older-24h-key
+  item_id: transactions-synced-older-24h-id
+  accounts_synced_at: <%= 3.hours.ago %>
+  transactions_synced_at: <%= 7.hours.ago %>
 
 with_multiple_accounts:
   user: one
