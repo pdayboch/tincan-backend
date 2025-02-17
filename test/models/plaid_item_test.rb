@@ -36,7 +36,18 @@ class PlaidItemTest < ActiveSupport::TestCase
     item = plaid_items(:new_item)
     Timecop.freeze(Time.zone.local(2025, 1, 31, 12, 0, 0)) do
       item.mark_transactions_as_synced
-      assert_equal Time.zone.local(2025, 1, 31, 12, 0, 0), item.transactions_synced_at
+      assert_equal Time.zone.local(2025, 1, 31, 12, 0, 0),
+                   item.transactions_synced_at
+    end
+  end
+
+  test 'mark_investment_transactions_synced updates columns' do
+    item = plaid_items(:new_item)
+    Timecop.freeze(Time.zone.local(2025, 1, 31, 12, 0, 0)) do
+      item.mark_investment_transactions_as_synced('2025-01-31')
+      assert_equal Time.zone.local(2025, 1, 31, 12, 0, 0),
+                   item.investment_transactions_synced_at
+      assert_equal '2025-01-31', item.investment_transactions_sync_cursor
     end
   end
 

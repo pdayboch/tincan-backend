@@ -49,6 +49,13 @@ class PlaidItem < ApplicationRecord
     update(transactions_synced_at: Time.zone.now)
   end
 
+  def mark_investment_transactions_as_synced(end_date)
+    update(
+      investment_transactions_synced_at: Time.current,
+      investment_transactions_sync_cursor: end_date
+    )
+  end
+
   private
 
   def create_audit_record
