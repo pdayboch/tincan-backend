@@ -10,22 +10,6 @@ module PlaidServices
         PlaidServices::Api.stubs(:new).returns(@mock_api)
       end
 
-      test 'correctly updates item transaction_sync_cursor' do
-        item = plaid_items(:new_item)
-
-        @mock_api.expects(:transactions_sync)
-                 .returns(
-                   added: [],
-                   modified: [],
-                   removed: [],
-                   next_cursor: 'next-cursor-2'
-                 )
-
-        SyncService.new(item).call
-
-        assert 'next-cursor-2', item.reload.transaction_sync_cursor
-      end
-
       test 'marks item transactions_synced_at after successful sync' do
         item = plaid_items(:new_item)
 
@@ -39,7 +23,10 @@ module PlaidServices
 
         Timecop.freeze(Time.zone.local(2025, 1, 31, 12, 0, 0)) do
           SyncService.new(item).call
-          assert_equal Time.zone.local(2025, 1, 31, 12, 0, 0), item.transactions_synced_at
+
+          assert_equal Time.zone.local(2025, 1, 31, 12, 0, 0),
+                       item.transactions_synced_at
+          assert 'next-cursor-2', item.reload.transaction_sync_cursor
         end
       end
 

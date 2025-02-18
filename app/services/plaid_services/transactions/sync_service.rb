@@ -15,8 +15,7 @@ module PlaidServices
         handle_added(transactions_data)
         handle_modified(transactions_data)
         handle_removed(transactions_data)
-        update_transaction_cursor(transactions_data)
-        @item.mark_transactions_as_synced
+        mark_transactions_as_synced(transactions_data)
       end
 
       private
@@ -89,8 +88,8 @@ module PlaidServices
         end
       end
 
-      def update_transaction_cursor(transaction_data)
-        @item.update(transaction_sync_cursor: transaction_data[:next_cursor])
+      def mark_transactions_as_synced(transaction_data)
+        @item.mark_transactions_as_synced(transaction_data[:next_cursor])
       end
 
       def fetch_transactions_data

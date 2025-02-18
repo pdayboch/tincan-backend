@@ -32,12 +32,14 @@ class PlaidItemTest < ActiveSupport::TestCase
     end
   end
 
-  test 'mark_transactions_as_synced updates the transactions_synced_at column' do
+  test 'mark_transactions_as_synced updates columns' do
     item = plaid_items(:new_item)
     Timecop.freeze(Time.zone.local(2025, 1, 31, 12, 0, 0)) do
-      item.mark_transactions_as_synced
+      item.mark_transactions_as_synced('abcdef')
+
       assert_equal Time.zone.local(2025, 1, 31, 12, 0, 0),
                    item.transactions_synced_at
+      assert_equal 'abcdef', item.transaction_sync_cursor
     end
   end
 
@@ -149,7 +151,7 @@ class PlaidItemTest < ActiveSupport::TestCase
     item = plaid_items(:new_item)
 
     assert_no_difference 'Plaid::ItemAudit.count' do
-      item.mark_transactions_as_synced
+      item.mark_transactions_as_synced('abcd')
     end
   end
 

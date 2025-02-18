@@ -45,8 +45,11 @@ class PlaidItem < ApplicationRecord
     update(accounts_synced_at: Time.zone.now)
   end
 
-  def mark_transactions_as_synced
-    update(transactions_synced_at: Time.zone.now)
+  def mark_transactions_as_synced(cursor)
+    update(
+      transactions_synced_at: Time.zone.now,
+      transaction_sync_cursor: cursor
+    )
   end
 
   def mark_investment_transactions_as_synced(end_date)
