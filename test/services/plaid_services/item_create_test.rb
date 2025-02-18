@@ -5,12 +5,11 @@ require 'test_helper'
 module PlaidServices
   class ApiTest < ActiveSupport::TestCase
     setup do
-      # Ensure jobs are not performed but only enqueued
+      # Ensure jobs are enqueued but not performed
       Sidekiq::Testing.fake!
     end
 
     teardown do
-      # Clear all Sidekiq queues after each test
       Sidekiq::Worker.clear_all
     end
 
@@ -35,8 +34,7 @@ module PlaidServices
       end
     end
 
-    test 'returns the job ids of the enqueued jobs' do
-      details_job_id = SecureRandom.uuid
+    test 'returns the job id of the enqueued job' do
       sync_accounts_job_id = SecureRandom.uuid
       user = users(:one)
       plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
@@ -44,39 +42,13 @@ module PlaidServices
         item_id: 'test-item-id'
       )
 
-      Plaid::GetItemDetailsJob.stub(:perform_async, details_job_id) do
-        Plaid::SyncAccountsJob.stub(:perform_async, sync_accounts_job_id) do
-          PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
-            result = ItemCreate.new('test-public-token', user).call
+      Plaid::SyncAccountsJob.stub(:perform_async, sync_accounts_job_id) do
+        PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
+          result = ItemCreate.new('test-public-token', user).call
 
-            assert_equal(
-              {
-                details_job_id: details_job_id,
-                sync_accounts_job_id: sync_accounts_job_id
-              },
-              result
-            )
-          end
+          assert_equal sync_accounts_job_id, result
         end
       end
-    end
-
-    test 'successfully enqueues Plaid::GetItemDetailsJob with correct item_id' do
-      user = users(:one)
-      plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
-        {
-          access_token: 'test-access-token',
-          item_id: 'test-item-id'
-        }
-      )
-
-      PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
-        ItemCreate.new('test-public-token', user).call
-      end
-
-      assert_equal 1, Plaid::GetItemDetailsJob.jobs.size, 'Expected one job to be enqueued'
-      job_args = Plaid::GetItemDetailsJob.jobs.first['args']
-      assert_includes job_args, 'test-item-id'
     end
 
     test 'successfully enqueues Plaid::SyncAccountsJob with correct item_id' do
@@ -97,7 +69,7 @@ module PlaidServices
       assert_includes job_args, 'test-item-id'
     end
 
-    test 'raises error and destroys plaid item for duplicate item id' do
+    test 'raises DuplicateItemError error for duplicate item id' do
       user = users(:one)
       existing_item = plaid_items(:new_item)
       plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
@@ -106,64 +78,13 @@ module PlaidServices
           item_id: existing_item.item_id
         }
       )
-
-      api_mock = Minitest::Mock.new
-      api_mock.expect(:destroy, true)
-
-      PlaidServices::Api.stub :new, lambda { |access_token|
-        assert_equal plaid_response.access_token,
-                     access_token,
-                     'API should be initialized with the correct access token'
-        api_mock
-      } do
-        PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
-          error = assert_raises(ItemCreate::Error) do
-            ItemCreate.new('test-public-token', user).call
-          end
-          assert_equal "Item has already been connected: #{existing_item.item_id}", error.message
-        end
-      end
-      assert_mock api_mock
-    end
-
-    test 'logs error with item id when destroy item attempt fails' do
-      user = users(:one)
-      existing_item = plaid_items(:new_item)
-      plaid_response = Plaid::ItemPublicTokenExchangeResponse.new(
-        {
-          access_token: 'test-access-token',
-          item_id: existing_item.item_id
-        }
-      )
-
-      api_server_error_body = {
-        'error_type' => 'TRANSACTIONS_ERROR',
-        'error_code' => Api::MUTATION_ERROR,
-        'error_message' => 'Underlying transaction data changed since last page was fetched.',
-        'request_id' => '12345',
-        'documentation_url' => 'https://plaid.com/docs'
-      }.to_json
-      api_server_error = Plaid::ApiError.new(response_body: api_server_error_body)
 
       PlaidServices::Api.stub(:public_token_exchange, plaid_response) do
-        api_mock = Minitest::Mock.new
-        api_mock.expect(:destroy, nil) do
-          raise api_server_error
+        error = assert_raises(ItemCreate::DuplicateItemError) do
+          ItemCreate.new('test-public-token', user).call
         end
-
-        logger_mock = Minitest::Mock.new
-        logger_mock.expect(:error, nil, ["Failed to destroy Plaid item id: #{existing_item.item_id}"])
-
-        Rails.stub(:logger, logger_mock) do
-          PlaidServices::Api.stub(:new, api_mock) do
-            assert_raises(ItemCreate::Error) do
-              ItemCreate.new('test-public-token', user).call
-            end
-          end
-        end
-
-        assert_mock logger_mock
-        assert_mock api_mock
+        expected_msg = "Item has already been connected. item_id: #{existing_item.item_id}"
+        assert_equal expected_msg, error.message
       end
     end
 

@@ -34,14 +34,13 @@ module Api
                                  .with { |token, user_arg| token == 'test-public-token' && user_arg == user }
                                  .returns(item_create)
 
-        resp = { details_job_id: 'details-job-1', sync_accounts_job_id: 'sync-job-2' }
-        item_create.expects(:call).returns(resp)
+        item_create.expects(:call).returns('sync-job-2')
         post api_v1_plaid_set_access_token_url, params: {
           userId: user.id,
           publicToken: 'test-public-token'
         }
 
-        expected_resp = { 'detailsJobId' => 'details-job-1', 'syncAccountsJobId' => 'sync-job-2' }
+        expected_resp = { 'jobId' => 'sync-job-2' }
         assert_equal expected_resp, response.parsed_body
         assert_response :ok
       end
