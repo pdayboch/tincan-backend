@@ -9,100 +9,54 @@ module PlaidServices
     def initialize(plaid_item)
       @item = plaid_item
       check_params!
-      @user = plaid_item.user
-      @existing_account_ids = @item.accounts.map(&:plaid_account_id)
+      @api = PlaidServices::Api.new(@item.access_key)
+      @user_id = plaid_item.user_id
+      @existing_accounts = @item.accounts
+      @processed_account_ids = []
     end
 
     def call
-      accounts_data = fetch_accounts_data
-      accounts_data.each do |account_data|
-        sync_or_create_account(account_data)
-      end
+      plaid_data = @api.accounts
+      sync_item_data(plaid_data.item)
+      sync_accounts(plaid_data.accounts)
 
-      deactivate_missing_accounts(accounts_data)
+      deactivate_missing_accounts!
       @item.mark_accounts_as_synced
-    end
-
-    private
-
-    def fetch_accounts_data
-      PlaidServices::Api.new(@item.access_key)
-                        .accounts
-                        .accounts
     rescue Plaid::ApiError => e
       handle_api_error(e)
     end
 
-    def sync_or_create_account(account_data)
-      if account_exists?(account_data)
-        update_account(account_data)
-      else
-        create_account!(account_data)
+    private
+
+    def sync_item_data(plaid_item_data)
+      # TODO
+    end
+
+    def sync_accounts(plaid_accounts_data)
+      plaid_accounts_data.each do |plaid_account_data|
+        sync_account(plaid_account_data)
+        @processed_account_ids << plaid_account_data.account_id
       end
     end
 
-    def update_account(data)
-      update_data = {
-        current_balance: balance(data),
-        name: name(data)
-      }
-
-      institution_name = @item.reload.institution_name
-      update_data[:institution_name] = institution_name if institution_name
-
-      local_account(data).update(update_data)
-    end
-
-    def create_account!(data)
-      mapped_types = Plaid::AccountTypeMapper.map(account_type(data))
-
-      account_data = {
-        plaid_account_id: plaid_account_id(data),
-        name: name(data),
-        current_balance: balance(data),
-        user_id: @user.id,
-        plaid_item_id: @item.id,
-        account_type: mapped_types[:type],
-        account_subtype: mapped_types[:subtype],
-        institution_name: @item.reload.institution_name
-
-      }
-
-      Account.create!(account_data)
+    def sync_account(plaid_account_data)
+      account = local_account(plaid_account_data)
+      if account
+        Plaid::Accounts::UpdateService.new(@item, account).call(plaid_account_data)
+      else
+        Plaid::Accounts::CreateService.new(@item).call(plaid_account_data)
+      end
     rescue Plaid::AccountTypeMapper::InvalidAccountType => e
       handle_invalid_account_type(e)
     end
 
-    def local_account(data)
-      @item.accounts.find_by(plaid_account_id: plaid_account_id(data))
+    def local_account(plaid_account_data)
+      @existing_accounts.find_by(plaid_account_id: plaid_account_data.account_id)
     end
 
-    def account_exists?(data)
-      @existing_account_ids.include?(plaid_account_id(data))
-    end
-
-    def plaid_account_id(data)
-      data.account_id
-    end
-
-    def name(data)
-      data.name || data.official_name
-    end
-
-    def balance(data)
-      data.balances.current
-    end
-
-    def account_type(data)
-      data.type
-    end
-
-    def missing_account_ids(accounts_data)
-      @existing_account_ids - accounts_data.map { |a| plaid_account_id(a) }
-    end
-
-    def deactivate_missing_accounts(accounts_data)
-      missing_account_ids = missing_account_ids(accounts_data)
+    def deactivate_missing_accounts!
+      missing_account_ids = @existing_accounts.map(&:plaid_account_id) -
+                            @processed_account_ids
       @item
         .accounts
         .where(plaid_account_id: missing_account_ids)
