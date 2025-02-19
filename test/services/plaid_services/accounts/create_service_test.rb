@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-module Plaid
+module PlaidServices
   module Accounts
     class CreateServiceTest < ActiveSupport::TestCase
       test 'correctly creates new account' do
@@ -16,7 +16,7 @@ module Plaid
           balances: Plaid::AccountBalance.new(current: 53.55)
         )
 
-        Plaid::Accounts::CreateService.new(item).call(account_data)
+        CreateService.new(item).call(account_data)
 
         new_account = item.reload.accounts.find_by(plaid_account_id: 'new-account-id')
 
@@ -41,8 +41,8 @@ module Plaid
           balances: Plaid::AccountBalance.new(current: 53.55)
         )
 
-        assert_raises(AccountTypeMapper::InvalidAccountType) do
-          Plaid::Accounts::CreateService.new(item).call(account_data)
+        assert_raises(Plaid::AccountTypeMapper::InvalidAccountType) do
+          CreateService.new(item).call(account_data)
         end
       end
     end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Plaid
+module PlaidServices
   module Accounts
     class UpdateService
       def initialize(plaid_item, account)

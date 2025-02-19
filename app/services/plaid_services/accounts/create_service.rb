@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Plaid
+module PlaidServices
   module Accounts
     class CreateService
       def initialize(plaid_item)
@@ -9,7 +9,7 @@ module Plaid
       end
 
       def call(plaid_account)
-        mapped_types = AccountTypeMapper.map(plaid_account.type)
+        mapped_types = Plaid::AccountTypeMapper.map(plaid_account.type)
 
         account_data = {
           plaid_account_id: plaid_account_id(plaid_account),

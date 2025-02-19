@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-module Plaid
+module PlaidServices
   module Accounts
     class UpdateServiceTest < ActiveSupport::TestCase
       test 'correctly updates account' do
@@ -19,7 +19,7 @@ module Plaid
           balances: Plaid::AccountBalance.new(current: new_balance)
         )
 
-        Plaid::Accounts::UpdateService.new(item, account).call(account_data)
+        UpdateService.new(item, account).call(account_data)
 
         assert_equal new_balance, account.reload.current_balance
         assert_equal new_name, account.name
@@ -38,7 +38,7 @@ module Plaid
           balances: Plaid::AccountBalance.new(current: account.current_balance)
         )
 
-        Plaid::Accounts::UpdateService.new(item, account).call(account_data)
+        UpdateService.new(item, account).call(account_data)
 
         assert_equal 'a new bank', account.reload.institution_name
       end
@@ -57,7 +57,7 @@ module Plaid
           balances: Plaid::AccountBalance.new(current: account.current_balance)
         )
 
-        Plaid::Accounts::UpdateService.new(item, account).call(account_data)
+        UpdateService.new(item, account).call(account_data)
 
         assert_equal 'some bank', account.reload.institution_name
       end

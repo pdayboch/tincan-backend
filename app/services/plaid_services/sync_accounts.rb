@@ -42,9 +42,9 @@ module PlaidServices
     def sync_account(plaid_account_data)
       account = local_account(plaid_account_data)
       if account
-        Plaid::Accounts::UpdateService.new(@item, account).call(plaid_account_data)
+        Accounts::UpdateService.new(@item, account).call(plaid_account_data)
       else
-        Plaid::Accounts::CreateService.new(@item).call(plaid_account_data)
+        Accounts::CreateService.new(@item).call(plaid_account_data)
       end
     rescue Plaid::AccountTypeMapper::InvalidAccountType => e
       handle_invalid_account_type(e)
