@@ -22,7 +22,7 @@ module Api
         err_msg = 'is required'
         raise BadRequestError.new(public_token: [err_msg]) unless params[:public_token]
 
-        job_id = PlaidServices::ItemCreate.new(params[:public_token], user).call
+        job_id = PlaidServices::Item::CreateService.new(params[:public_token], user).call
         render json: { jobId: job_id }
       rescue Plaid::ApiError
         render json: { error: 'Invalid request' }, status: :bad_request

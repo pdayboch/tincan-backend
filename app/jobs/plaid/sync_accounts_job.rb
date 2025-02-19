@@ -23,8 +23,8 @@ module Plaid
     def process_item(item)
       PlaidItem.transaction do
         item.lock!
-        PlaidServices::SyncAccounts.new(item).call
-      rescue PlaidServices::SyncAccounts::PlaidApiRateLimitError
+        PlaidServices::Accounts::SyncService.new(item).call
+      rescue PlaidServices::Accounts::SyncService::PlaidApiRateLimitError
         Rails.logger.warn('Plaid API rate limit exceeded. Stopping job.')
         throw :rate_limit_exceeded
       end

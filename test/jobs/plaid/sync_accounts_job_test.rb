@@ -8,13 +8,13 @@ module Plaid
       item = plaid_items(:accounts_synced_nil)
 
       mock_sync_accounts_service = mock('sync-accounts-service')
-      PlaidServices::SyncAccounts.expects(:new)
-                                 .at_least_once
-                                 .returns(mock_sync_accounts_service)
+      PlaidServices::Accounts::SyncService.expects(:new)
+                                          .at_least_once
+                                          .returns(mock_sync_accounts_service)
 
-      PlaidServices::SyncAccounts.expects(:new)
-                                 .with { |arg| arg.id == item.id }
-                                 .returns(mock_sync_accounts_service)
+      PlaidServices::Accounts::SyncService.expects(:new)
+                                          .with { |arg| arg.id == item.id }
+                                          .returns(mock_sync_accounts_service)
 
       mock_sync_accounts_service.expects(:call)
                                 .at_least_once
@@ -27,13 +27,13 @@ module Plaid
       item = plaid_items(:accounts_synced_older_24_h)
 
       mock_sync_accounts_service = mock('sync-accounts-service')
-      PlaidServices::SyncAccounts.expects(:new)
-                                 .at_least_once
-                                 .returns(mock_sync_accounts_service)
+      PlaidServices::Accounts::SyncService.expects(:new)
+                                          .at_least_once
+                                          .returns(mock_sync_accounts_service)
 
-      PlaidServices::SyncAccounts.expects(:new)
-                                 .with { |arg| arg.id == item.id }
-                                 .returns(mock_sync_accounts_service)
+      PlaidServices::Accounts::SyncService.expects(:new)
+                                          .with { |arg| arg.id == item.id }
+                                          .returns(mock_sync_accounts_service)
 
       mock_sync_accounts_service.expects(:call)
                                 .at_least_once
@@ -48,13 +48,13 @@ module Plaid
 
       mock_sync_accounts_service = mock('sync-accounts-service')
 
-      PlaidServices::SyncAccounts.expects(:new)
-                                 .with { |arg| arg.id == not_process_item.id }
-                                 .never
+      PlaidServices::Accounts::SyncService.expects(:new)
+                                          .with { |arg| arg.id == not_process_item.id }
+                                          .never
 
-      PlaidServices::SyncAccounts.expects(:new)
-                                 .with { |arg| arg.id == process_item.id }
-                                 .returns(mock_sync_accounts_service)
+      PlaidServices::Accounts::SyncService.expects(:new)
+                                          .with { |arg| arg.id == process_item.id }
+                                          .returns(mock_sync_accounts_service)
 
       mock_sync_accounts_service.expects(:call)
                                 .returns(true)
@@ -64,11 +64,11 @@ module Plaid
 
     test 'halts processing when plaid rate limit exceeded' do
       mock_sync_accounts_service = mock('sync-accounts-service')
-      PlaidServices::SyncAccounts.expects(:new)
-                                 .returns(mock_sync_accounts_service)
+      PlaidServices::Accounts::SyncService.expects(:new)
+                                          .returns(mock_sync_accounts_service)
 
       mock_sync_accounts_service.expects(:call)
-                                .raises(PlaidServices::SyncAccounts::PlaidApiRateLimitError)
+                                .raises(PlaidServices::Accounts::SyncService::PlaidApiRateLimitError)
 
       Rails.logger.expects(:warn).with('Plaid API rate limit exceeded. Stopping job.')
 
@@ -80,8 +80,8 @@ module Plaid
         data: { 'error_type' => 'SERVER_ERROR' }
       )
       mock_sync_accounts_service = mock('sync-accounts-service')
-      PlaidServices::SyncAccounts.expects(:new)
-                                 .returns(mock_sync_accounts_service)
+      PlaidServices::Accounts::SyncService.expects(:new)
+                                          .returns(mock_sync_accounts_service)
 
       mock_sync_accounts_service.expects(:call)
                                 .raises(some_error)
