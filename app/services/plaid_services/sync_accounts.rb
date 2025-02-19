@@ -29,7 +29,7 @@ module PlaidServices
     private
 
     def sync_item_data(plaid_item_data)
-      # TODO
+      Item::SyncService.new(@item).call(plaid_item_data)
     end
 
     def sync_accounts(plaid_accounts_data)
