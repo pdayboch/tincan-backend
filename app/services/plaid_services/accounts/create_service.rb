@@ -23,6 +23,11 @@ module PlaidServices
         }
 
         Account.create!(account_data)
+      rescue ActiveRecord::RecordNotUnique
+        msg = 'Attempted to create a Plaid account which already exists: ' \
+              "plaid_account_id: #{plaid_account_id(plaid_account)}"
+        Rails.logger.error("PlaidServices::Accounts::Create - #{msg}")
+        @item.accounts.find_by!(plaid_account_id: plaid_account.account_id)
       end
 
       private
@@ -36,7 +41,7 @@ module PlaidServices
       end
 
       def balance(data)
-        data.balances.current
+        data.balances.try(:current)
       end
     end
   end
