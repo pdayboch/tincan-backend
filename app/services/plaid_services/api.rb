@@ -7,6 +7,7 @@ require_relative 'api/item'
 require_relative 'api/institution'
 require_relative 'api/account'
 require_relative 'api/transaction'
+require_relative 'api/investment'
 
 module PlaidServices
   class Api
@@ -15,6 +16,7 @@ module PlaidServices
     include Api::Institution
     include Api::Account
     include Api::Transaction
+    include Api::Investment
 
     PRODUCTS = ['transactions'].freeze
     ADDITONAL_PRODUCTS = %w[investments].freeze
