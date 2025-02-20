@@ -11,13 +11,12 @@ module PlaidServices
         item.update(institution_id: institution_id)
 
         item_data = Plaid::ItemGetResponse.new(
-          item: Plaid::ItemWithConsentFields.new(
+          item: Plaid::Item.new(
             {
               item_id: item.id,
               institution_id: institution_id,
               billed_products: ['transactions'],
-              products: %w[transactions investments],
-              consented_data_scopes: ['account_and_balance_info']
+              products: %w[transactions investments]
             }
           )
         )
@@ -31,7 +30,6 @@ module PlaidServices
 
         assert_equal ['transactions'], item.reload.billed_products
         assert_equal %w[transactions investments], item.products
-        assert_equal ['account_and_balance_info'], item.consented_data_scopes
       end
 
       test 'correctly sets institution details if not set' do
@@ -47,8 +45,7 @@ module PlaidServices
               item_id: item.id,
               institution_id: institution_id,
               billed_products: ['transactions'],
-              products: %w[transactions investments],
-              consented_data_scopes: ['account_and_balance_info']
+              products: %w[transactions investments]
             }
           )
         )

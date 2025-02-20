@@ -18,8 +18,7 @@ module PlaidServices
       def update_data(data)
         update_data = {
           billed_products: data.billed_products,
-          products: data.products,
-          consented_data_scopes: data.consented_data_scopes
+          products: data.products
         }
 
         return update_data if @item.institution_id == data.institution_id
