@@ -32,6 +32,7 @@ module PlaidServices
       response = mock('response')
       response.stubs(
         next_cursor: 'next-cursor',
+        accounts: ['account'],
         added: ['transaction1'],
         modified: ['modified1'],
         removed: ['removed1'],
@@ -40,6 +41,7 @@ module PlaidServices
 
       expected_result = {
         next_cursor: 'next-cursor',
+        accounts: ['account'],
         added: %w[transaction1],
         modified: ['modified1'],
         removed: ['removed1']
@@ -59,6 +61,7 @@ module PlaidServices
       first_response = mock('first_response')
       first_response.stubs(
         next_cursor: 'next-cursor',
+        accounts: ['accounts-page-1'],
         added: ['transactions1'],
         modified: ['modified1'],
         removed: [],
@@ -68,6 +71,7 @@ module PlaidServices
       second_response = mock('second_response')
       second_response.stubs(
         next_cursor: 'next-cursor-2',
+        accounts: ['accounts-page-2'],
         added: ['transactions2'],
         modified: [],
         removed: ['removed2'],
@@ -76,6 +80,7 @@ module PlaidServices
 
       expected_result = {
         next_cursor: 'next-cursor-2',
+        accounts: ['accounts-page-1'],
         added: %w[transactions1 transactions2],
         modified: ['modified1'],
         removed: ['removed2']
@@ -99,6 +104,7 @@ module PlaidServices
       response = mock('response')
       response.stubs(
         next_cursor: 'next-cursor-2',
+        accounts: ['account'],
         added: ['transaction1'],
         modified: ['modified1'],
         removed: ['removed1'],
@@ -107,6 +113,7 @@ module PlaidServices
 
       expected_result = {
         next_cursor: 'next-cursor-2',
+        accounts: ['account'],
         added: %w[transaction1],
         modified: ['modified1'],
         removed: ['removed1']
@@ -126,6 +133,7 @@ module PlaidServices
       first_response = mock('first_response')
       first_response.stubs(
         next_cursor: 'next-cursor-2',
+        accounts: ['accounts-first-page'],
         added: ['transactions1'],
         modified: ['modified1'],
         removed: [],
@@ -145,6 +153,7 @@ module PlaidServices
       second_response = mock('second_response')
       second_response.stubs(
         next_cursor: 'next-cursor-3',
+        accounts: ['accounts-second-page'],
         added: ['transactions2'],
         modified: [],
         removed: ['removed2'],
@@ -153,6 +162,7 @@ module PlaidServices
 
       expected_result = {
         next_cursor: 'next-cursor-3',
+        accounts: ['accounts-first-page'],
         added: %w[transactions1 transactions2],
         modified: ['modified1'],
         removed: ['removed2']
@@ -191,6 +201,7 @@ module PlaidServices
       first_response = mock('first_response')
       first_response.stubs(
         next_cursor: 'next-cursor-2',
+        accounts: ['accounts'],
         added: ['transactions1'],
         modified: ['modified1'],
         removed: [],

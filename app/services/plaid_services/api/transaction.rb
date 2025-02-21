@@ -6,6 +6,7 @@ module PlaidServices
       def transactions_sync(initial_cursor = nil)
         cursor = initial_cursor || ''
         original_cursor = nil
+        accounts = []
         added = []
         modified = []
         removed = []
@@ -20,6 +21,7 @@ module PlaidServices
             original_cursor = cursor if has_more && original_cursor.nil?
 
             cursor = response.next_cursor
+            accounts = response.accounts if accounts.empty?
             added += response.added
             modified += response.modified
             removed += response.removed
@@ -28,6 +30,7 @@ module PlaidServices
 
           {
             next_cursor: cursor,
+            accounts: accounts,
             added: added,
             modified: modified,
             removed: removed
@@ -37,6 +40,7 @@ module PlaidServices
 
           if mutation_during_pagination?(e) && !original_cursor.nil? && retry_count < MAX_RETRIES
             retry_count += 1
+            accounts = []
             added = []
             modified = []
             removed = []
