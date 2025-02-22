@@ -2,3 +2,8 @@ sync_transactions_job:
   cron: "*/5 * * * *"
   class: "Plaid::SyncTransactionsJob"
   queue: default
+
+sync_accounts_job:
+  cron: "*/5 * * * *"
+  class: "Plaid::SyncAccountsJob"
+  queue: default
