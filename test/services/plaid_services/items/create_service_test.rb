@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module PlaidServices
-  module Item
+  module Items
     class CreateServiceTest < ActiveSupport::TestCase
       setup do
         # Ensure jobs are enqueued but not performed

@@ -30,9 +30,9 @@ module Api
       test 'calls item create service and returns result' do
         item_create = mock('item_create_service')
         user = users(:one)
-        PlaidServices::Item::CreateService.expects(:new)
-                                          .with { |token, user_arg| token == 'test-public-token' && user_arg == user }
-                                          .returns(item_create)
+        PlaidServices::Items::CreateService.expects(:new)
+                                           .with { |token, user_arg| token == 'test-public-token' && user_arg == user }
+                                           .returns(item_create)
 
         item_create.expects(:call).returns('sync-job-2')
         post api_v1_plaid_set_access_token_url, params: {

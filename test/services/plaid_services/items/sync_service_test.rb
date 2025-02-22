@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module PlaidServices
-  module Item
+  module Items
     class SyncServiceTest < ActiveSupport::TestCase
       test 'correctly sets item attributes' do
         item = plaid_items(:new_item)
@@ -25,8 +25,8 @@ module PlaidServices
                           .with(institution_id)
                           .never
 
-        PlaidServices::Item::SyncService.new(item)
-                                        .call(item_data.item)
+        PlaidServices::Items::SyncService.new(item)
+                                         .call(item_data.item)
 
         assert_equal ['transactions'], item.reload.billed_products
         assert_equal %w[transactions investments], item.products
@@ -60,8 +60,8 @@ module PlaidServices
                           .with(institution_id)
                           .returns(institution_data)
 
-        PlaidServices::Item::SyncService.new(item)
-                                        .call(item_data.item)
+        PlaidServices::Items::SyncService.new(item)
+                                         .call(item_data.item)
 
         assert_equal institution_id, item.reload.institution_id
         assert_equal institution_name, item.institution_name
@@ -70,7 +70,7 @@ module PlaidServices
       test 'raises argumentError when plaid_item is incorrect type' do
         expected_msg = 'plaid_item must be of type PlaidItem: String'
         error = assert_raises ArgumentError do
-          PlaidServices::Item::SyncService.new('string')
+          PlaidServices::Items::SyncService.new('string')
         end
 
         assert_equal expected_msg, error.message

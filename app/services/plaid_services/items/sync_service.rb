@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module PlaidServices
-  module Item
+  module Items
     class SyncService
       def initialize(item)
         @item = item

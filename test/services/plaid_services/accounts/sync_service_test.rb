@@ -31,9 +31,9 @@ module PlaidServices
                  .returns(accounts_data)
 
         mock_item_sync = mock('mock-item-sync')
-        Item::SyncService.expects(:new)
-                         .with(item)
-                         .returns(mock_item_sync)
+        Items::SyncService.expects(:new)
+                          .with(item)
+                          .returns(mock_item_sync)
         mock_item_sync.expects(:call)
                       .with(accounts_data.item)
                       .returns(true)
@@ -69,7 +69,7 @@ module PlaidServices
                  .returns(accounts_data)
 
         mock_item_sync = mock('mock-item-sync')
-        Item::SyncService.expects(:new).returns(mock_item_sync)
+        Items::SyncService.expects(:new).returns(mock_item_sync)
         mock_item_sync.expects(:call).returns(true)
 
         SyncService.new(item).call
@@ -124,7 +124,7 @@ module PlaidServices
                  .returns(accounts_data)
 
         mock_item_sync = mock('mock-item-sync')
-        Item::SyncService.expects(:new).returns(mock_item_sync)
+        Items::SyncService.expects(:new).returns(mock_item_sync)
         mock_item_sync.expects(:call).returns(true)
 
         Rails.logger.expects(:error).with('Unknown Plaid account type: bad. Skipping account creation.')
@@ -170,7 +170,7 @@ module PlaidServices
                  .returns(accounts_data)
 
         mock_item_sync = mock('mock-item-sync')
-        Item::SyncService.expects(:new).returns(mock_item_sync)
+        Items::SyncService.expects(:new).returns(mock_item_sync)
         mock_item_sync.expects(:call).returns(true)
 
         SyncService.new(item).call
@@ -192,7 +192,7 @@ module PlaidServices
                  .returns(accounts_data)
 
         mock_item_sync = mock('mock-item-sync')
-        Item::SyncService.expects(:new).returns(mock_item_sync)
+        Items::SyncService.expects(:new).returns(mock_item_sync)
         mock_item_sync.expects(:call).returns(true)
 
         Timecop.freeze(Time.zone.local(2025, 1, 31, 12, 0, 0)) do
@@ -222,7 +222,7 @@ module PlaidServices
                  .returns(accounts_data)
 
         mock_item_sync = mock('mock-item-sync')
-        Item::SyncService.expects(:new).returns(mock_item_sync)
+        Items::SyncService.expects(:new).returns(mock_item_sync)
         mock_item_sync.expects(:call).returns(true)
 
         SyncService.new(item).call
