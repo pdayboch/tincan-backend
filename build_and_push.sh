@@ -18,6 +18,15 @@ if [ -z "$DOCKER_HUB_USERNAME" ]; then
   exit 1
 fi
 
-docker build -t $DOCKER_HUB_USERNAME/$IMAGE_NAME:$TAG .
+# Read Ruby version from .ruby-version
+if [ -f .ruby-version ]; then
+  RUBY_VERSION=$(cat .ruby-version | tr -d '[:space:]')
+  echo "Using Ruby version: $RUBY_VERSION"
+else
+  echo ".ruby-version file not found!"
+  exit 1
+fi
+
+docker build --build-arg RUBY_VERSION=$RUBY_VERSION -t $DOCKER_HUB_USERNAME/$IMAGE_NAME:$TAG .
 
 docker push $DOCKER_HUB_USERNAME/$IMAGE_NAME:$TAG

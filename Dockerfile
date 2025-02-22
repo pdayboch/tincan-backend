@@ -1,8 +1,7 @@
 # syntax = docker/dockerfile:1
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.4.1
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
+ARG RUBY_VERSION=latest
+FROM registry.docker.com/library/ruby:${RUBY_VERSION}-slim AS base
 
 # Rails app lives here
 WORKDIR /rails
@@ -21,8 +20,10 @@ FROM base AS build
 # and generate ssl certs.
 RUN apt-get update -qq && \
   apt-get install --no-install-recommends -y build-essential \
-  git libpq-dev pkg-config
-
+  git \
+  libpq-dev \
+  pkg-config \
+  libyaml-dev
 
 # Make sure Bundler version matches the bundler version in Gemfile.lock
 # and install Bundler
