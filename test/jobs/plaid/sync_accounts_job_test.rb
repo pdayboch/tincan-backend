@@ -23,8 +23,8 @@ module Plaid
       Plaid::SyncAccountsJob.new.perform
     end
 
-    test 'processes items with accounts_synced_at older than 24 hours' do
-      item = plaid_items(:accounts_synced_older_24_h)
+    test 'processes items with accounts_synced_at older than 6 hours' do
+      item = plaid_items(:accounts_synced_older_6_h)
 
       mock_sync_accounts_service = mock('sync-accounts-service')
       PlaidServices::Accounts::SyncService.expects(:new)

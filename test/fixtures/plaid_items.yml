@@ -41,11 +41,11 @@ accounts_synced_nil:
   accounts_synced_at:
   transactions_synced_at:
 
-accounts_synced_older_24_h:
+accounts_synced_older_6_h:
   user: one
   access_key: four-access-key
   item_id: four-item-id
-  accounts_synced_at: <%= 25.hours.ago %>
+  accounts_synced_at: <%= 7.hours.ago %>
   transactions_synced_at: <%= 2.hours.ago %>
 
 transactions_synced_nil:
