@@ -15,6 +15,7 @@ gem 'puma', '~> 6.0'
 gem 'rails', '~> 7.2.1'
 gem 'redis'
 gem 'sidekiq'
+gem 'sidekiq-cron'
 gem 'sidekiq-status'
 
 # Reduces boot times through caching; required in config/boot.rb

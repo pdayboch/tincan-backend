@@ -35,14 +35,5 @@ module Backend
     config.middleware.use config.session_store, config.session_options
 
     config.active_job.queue_adapter = :sidekiq
-
-    Sidekiq.configure_client do |config|
-      Sidekiq::Status.configure_client_middleware config, expiration: 24.hours.to_i
-    end
-
-    Sidekiq.configure_server do |config|
-      Sidekiq::Status.configure_server_middleware config, expiration: 24.hours.to_i
-      Sidekiq::Status.configure_client_middleware config, expiration: 24.hours.to_i
-    end
   end
 end
