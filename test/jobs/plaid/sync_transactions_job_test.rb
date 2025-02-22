@@ -23,8 +23,8 @@ module Plaid
       Plaid::SyncTransactionsJob.new.perform
     end
 
-    test 'processes items with transactions_synced_at older than 24 hours' do
-      item = plaid_items(:transactions_synced_older_6_h)
+    test 'processes items with transactions_synced_at older than 12 hours' do
+      item = plaid_items(:transactions_synced_older_12_h)
 
       mock_sync_service = mock('sync-service')
       PlaidServices::Transactions::SyncService.expects(:new)
@@ -62,7 +62,7 @@ module Plaid
     end
 
     test 'processes only override_item_ids when specified' do
-      process_item = plaid_items(:transactions_synced_older_6_h)
+      process_item = plaid_items(:transactions_synced_older_12_h)
       not_process_item = plaid_items(:transactions_synced_nil)
 
       mock_sync_service = mock('sync-service')

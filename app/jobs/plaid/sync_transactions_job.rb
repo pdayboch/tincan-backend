@@ -7,7 +7,7 @@ module Plaid
 
     sidekiq_options retry: 2
 
-    SYNC_PERIOD = 6.hours
+    SYNC_PERIOD = 12.hours
 
     # @param override_item_ids [Array<String>, nil] optional item_ids to sync transactions.
     # To sync for all items that need a transactions sync, pass nil

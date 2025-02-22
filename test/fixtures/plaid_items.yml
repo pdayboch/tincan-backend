@@ -55,12 +55,12 @@ transactions_synced_nil:
   accounts_synced_at: <%= 3.hours.ago %>
   transactions_synced_at:
 
-transactions_synced_older_6_h:
+transactions_synced_older_12_h:
   user: one
-  access_key: transactions-synced-older-24h-key
-  item_id: transactions-synced-older-24h-id
+  access_key: transactions-synced-older-12h-key
+  item_id: transactions-synced-older-12h-id
   accounts_synced_at: <%= 3.hours.ago %>
-  transactions_synced_at: <%= 7.hours.ago %>
+  transactions_synced_at: <%= 13.hours.ago %>
 
 with_multiple_accounts:
   user: one
