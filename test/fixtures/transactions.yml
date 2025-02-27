@@ -80,6 +80,15 @@ split:
   split_from_id: <%= ActiveRecord::FixtureSet.identify(:with_split) %>
   has_splits: false
 
+with_category:
+  transaction_date: 2025-01-03
+  amount: 172.35
+  description: "categorized transaction"
+  account: two
+  category: spend
+  subcategory: restaurant
+  has_splits: false
+
 uncategorized:
   transaction_date: 2024-09-10
   amount: 12.19

@@ -55,6 +55,10 @@ class Transaction < ApplicationRecord
 
   after_create :apply_categorization_rule
 
+  def uncategorized?
+    subcategory_id == uncategorized_subcategory_id
+  end
+
   private
 
   def apply_categorization_rule
@@ -66,6 +70,7 @@ class Transaction < ApplicationRecord
 
     self.category = matched_rule.category
     self.subcategory = matched_rule.subcategory
+    save
   end
 
   def set_default_category_and_subcategory

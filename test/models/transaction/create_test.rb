@@ -47,7 +47,7 @@ class TransactionCreateTest < ActiveSupport::TestCase
       account_id: account.id
     )
 
-    assert_equal t.subcategory.id, subcategory.id
+    assert_equal t.reload.subcategory.id, subcategory.id
     assert_equal t.category.id, category.id
   end
 
