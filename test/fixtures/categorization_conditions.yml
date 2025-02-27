@@ -69,3 +69,9 @@ account_exactly:
   transaction_field: account
   match_type: exactly
   match_value: <%= ActiveRecord::FixtureSet.identify(:one, :accounts) %>
+
+one_condition_description_exactly:
+  categorization_rule: one_condition_description_exactly
+  transaction_field: description
+  match_type: exactly
+  match_value: "Stop and Shop"

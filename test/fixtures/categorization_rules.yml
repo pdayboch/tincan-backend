@@ -11,3 +11,7 @@
 one:
   category: transfer
   subcategory: cash_and_atm
+
+one_condition_description_exactly:
+  category: food
+  subcategory: restaurant

@@ -11,22 +11,34 @@ module PlaidServices
       end
 
       def call
-        category, subcategory = @category_mapper.map(plaid_category)
-
-        @account.transactions.create!(
+        transaction = @account.transactions.create!(
           plaid_transaction_id: @plaid_transaction.transaction_id,
           transaction_date: date,
           statement_transaction_date: date,
           amount: @plaid_transaction.amount,
           description: description,
           statement_description: description,
-          pending: @plaid_transaction.pending,
+          pending: @plaid_transaction.pending
+        )
+
+        apply_plaid_category(transaction) if transaction.uncategorized?
+
+        transaction
+      end
+
+      private
+
+      def apply_plaid_category(transaction)
+        return unless plaid_category
+
+        category, subcategory = @category_mapper.map(plaid_category)
+        return unless category && subcategory
+
+        transaction.update!(
           category_id: category.id,
           subcategory_id: subcategory.id
         )
       end
-
-      private
 
       def date
         @plaid_transaction.authorized_date || @plaid_transaction.date

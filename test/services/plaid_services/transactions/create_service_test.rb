@@ -63,6 +63,35 @@ module PlaidServices
         assert saved_transaction.pending
       end
 
+      test 'uses category from categorization_rule when present' do
+        item = plaid_items(:with_multiple_accounts)
+        account = item.accounts.first
+        rule = categorization_rules(:one_condition_description_exactly)
+        condition = rule.categorization_conditions.first
+        subcategory_id = rule.subcategory_id
+
+        transaction_data = Plaid::Transaction.new(
+          account_id: account.plaid_account_id,
+          amount: 6.33,
+          authorized_date: Date.new(2025, 1, 1),
+          date: Date.new(2025, 1, 2),
+          name: condition.match_value,
+          pending: false,
+          transaction_id: 'transaction-1-id'
+        )
+
+        mock_mapper = mock('category-mapper')
+        mock_mapper.expects(:map).never
+
+        transaction = CreateService.new(
+          account,
+          transaction_data,
+          category_mapper: mock_mapper
+        ).call
+
+        assert_equal subcategory_id, transaction.reload.subcategory_id
+      end
+
       test 'creates transaction with category when plaid personal_finance_category set' do
         item = plaid_items(:with_multiple_accounts)
         account = item.accounts.first
