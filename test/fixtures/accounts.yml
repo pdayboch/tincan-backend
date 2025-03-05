@@ -85,3 +85,13 @@ plaid_savings_account:
   plaid_account_id: plaid-savings-account-id
   plaid_item: with_multiple_accounts
   current_balance: 200.42
+
+plaid_loan_account:
+  name: plaid loan account
+  account_type: liabilities
+  account_subtype: loans
+  active: true
+  user: one
+  plaid_account_id: plaid-loan-account-id
+  plaid_item: with_multiple_accounts
+  current_balance: 10000.99

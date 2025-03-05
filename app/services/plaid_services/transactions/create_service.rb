@@ -15,7 +15,7 @@ module PlaidServices
           plaid_transaction_id: @plaid_transaction.transaction_id,
           transaction_date: date,
           statement_transaction_date: date,
-          amount: @plaid_transaction.amount,
+          amount: PlaidServices::TransactionAmountMapper.new(@account).map(@plaid_transaction),
           description: description,
           statement_description: description,
           pending: @plaid_transaction.pending

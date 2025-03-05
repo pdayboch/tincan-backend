@@ -6,8 +6,8 @@ module PlaidServices
   module Transactions
     class CreateServiceTest < ActiveSupport::TestCase
       test 'creates transaction with correct attributes' do
-        item = plaid_items(:with_multiple_accounts)
-        account = item.accounts.first
+        account = accounts(:plaid_credit_account)
+
         transaction = Plaid::Transaction.new(
           account_id: account.plaid_account_id,
           amount: 6.33,
@@ -28,7 +28,7 @@ module PlaidServices
         assert_equal 'transaction-1-id', saved_transaction.plaid_transaction_id
         assert_equal 'Uber 072515 SF**POOL**', saved_transaction.description
         assert_equal 'Uber 072515 SF**POOL**', saved_transaction.statement_description
-        assert_equal 6.33, saved_transaction.amount
+        assert_equal(-6.33, saved_transaction.amount)
         assert_equal Date.new(2025, 1, 1), saved_transaction.transaction_date
         assert_equal Date.new(2025, 1, 1), saved_transaction.statement_transaction_date
         assert_equal 'Uncategorized', saved_transaction.subcategory.name
@@ -36,12 +36,11 @@ module PlaidServices
       end
 
       test 'creates transaction with correct attributes when no authorized_date' do
-        item = plaid_items(:with_multiple_accounts)
-        account = item.accounts.first
+        account = accounts(:plaid_savings_account)
         transaction = Plaid::Transaction.new(
           {
             account_id: account.plaid_account_id,
-            amount: 5.4,
+            amount: -5.4,
             date: Date.new(2024, 2, 23),
             name: "McDonald's",
             pending: true,
