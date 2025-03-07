@@ -6,7 +6,6 @@ module AccountServices
       @account_provider = params[:account_provider]
       @user_id = params[:user_id]
       @active = params[:active] || true
-      @statement_directory = params[:statement_directory]
     end
 
     def call
@@ -18,7 +17,6 @@ module AccountServices
         account_subtype: parser_class::ACCOUNT_SUBTYPE,
         active: @active,
         user_id: @user_id,
-        statement_directory: @statement_directory,
         parser_class: @account_provider
       )
 

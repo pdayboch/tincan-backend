@@ -26,7 +26,6 @@ one:
   active: true
   deletable: true
   user: one
-  statement_directory: "credit card/chase freedom"
   parser_class: "ChaseFreedomCreditCard"
 
 two:
@@ -37,7 +36,6 @@ two:
   active: true
   deletable: true
   user: two
-  statement_directory: "credit card/capital one quicksilver"
 
 three:
   institution_name: Chase
@@ -47,7 +45,6 @@ three:
   active: true
   deletable: true
   user: one
-  statement_directory: "chase/amazon card"
 
 non_deletable_account:
   name: Cash

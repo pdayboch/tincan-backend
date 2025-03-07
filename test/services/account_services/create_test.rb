@@ -9,8 +9,7 @@ module AccountServices
       user = users(:one)
       params = {
         account_provider: 'MockStatementParser',
-        user_id: user.id,
-        statement_directory: '/statements'
+        user_id: user.id
       }
 
       service = AccountServices::Create.new(params)
@@ -28,8 +27,7 @@ module AccountServices
       user = users(:one)
       params = {
         account_provider: 'InvalidProvider',
-        user_id: user.id,
-        statement_directory: '/statements'
+        user_id: user.id
       }
 
       service = AccountServices::Create.new(params)
@@ -45,8 +43,7 @@ module AccountServices
 
     test 'should raise UnprocessableEntityError on account model errors' do
       params = {
-        account_provider: 'MockStatementParser',
-        statement_directory: '/statements'
+        account_provider: 'MockStatementParser'
       }
 
       service = AccountServices::Create.new(params)

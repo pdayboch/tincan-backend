@@ -39,10 +39,6 @@ class AccountSerializer < ActiveModel::Serializer
     object.institution_name
   end
 
-  attribute :statementDirectory do
-    object.statement_directory
-  end
-
   attribute :userId do
     object.user_id
   end

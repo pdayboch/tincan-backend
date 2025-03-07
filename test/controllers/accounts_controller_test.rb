@@ -22,8 +22,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_difference('Account.count') do
       post accounts_url, params: {
         accountProvider: 'ChaseFreedomCreditCard',
-        userId: account.user_id,
-        statementDirectory: 'credit cards/chase'
+        userId: account.user_id
       }
     end
 
@@ -35,8 +34,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
     post accounts_url, params: {
       accountProvider: 'NonExistantProvider',
-      userId: account.user_id,
-      statementDirectory: 'credit cards/chase'
+      userId: account.user_id
     }
 
     assert_response :unprocessable_entity
@@ -54,18 +52,15 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     account = accounts(:one)
 
     patch account_url(account), params: {
-      active: false,
-      statementDirectory: 'credit cards/new'
+      active: false
     }
 
     assert_response :success
     account.reload
     assert_equal account.active, false, 'Account was not updated'
-    assert_equal account.statement_directory, 'credit cards/new', 'Account was not updated'
 
     json_response = response.parsed_body
     assert_equal account.id, json_response['id']
-    assert_equal account.statement_directory, json_response['statementDirectory']
     assert_equal account.active, json_response['active']
   end
 

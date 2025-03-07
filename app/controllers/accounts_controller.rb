@@ -38,7 +38,7 @@ class AccountsController < ApplicationController
 
   # Only allow a list of trusted parameters through for create action.
   def account_create_params
-    params.permit(:account_provider, :active, :user_id, :statement_directory)
+    params.permit(:account_provider, :active, :user_id)
   end
 
   # Only allow a list of trusted parameters through for update action.
@@ -50,6 +50,6 @@ class AccountsController < ApplicationController
       raise UnprocessableEntityError, error
     end
 
-    params.permit(:active, :user_id, :statement_directory)
+    params.permit(:active, :user_id)
   end
 end
