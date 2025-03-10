@@ -3,7 +3,7 @@
 module AccountServices
   class Create
     def initialize(params)
-      @account_provider = params[:account_provider]
+      @account_provider = params[:manual_account_provider]
       @user_id = params[:user_id]
       @active = params[:active] || true
     end
@@ -25,7 +25,7 @@ module AccountServices
       account
     rescue InvalidParser => e
       error = {
-        account_provider: ["'#{e.message}' is not a valid value."]
+        manual_account_provider: ["'#{e.message}' is not a valid value."]
       }
       raise UnprocessableEntityError, error
     end

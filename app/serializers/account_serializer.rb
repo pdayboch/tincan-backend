@@ -39,6 +39,14 @@ class AccountSerializer < ActiveModel::Serializer
     object.institution_name
   end
 
+  attribute :manualAccountEnabled do
+    object.parser_class.present?
+  end
+
+  attribute :plaidAccountEnabled do
+    object.plaid_account_id.present?
+  end
+
   attribute :userId do
     object.user_id
   end

@@ -15,41 +15,39 @@ class AccountsController < ApplicationController
   end
 
   # POST /accounts
+  # API for creating manual accounts only. Plaid accounts are created via Plaid
+  # Link which then get synced via Plaid::SyncAccountsJob
   def create
-    account = AccountServices::Create.new(account_create_params).call
+    account = AccountServices::Create.new(account_params).call
     render json: account, status: :created, location: account
   end
 
   # PATCH/PUT /accounts/1
   def update
     account = Account.find(params[:id])
-    raise UnprocessableEntityError, account.errors unless account.update(account_update_params)
+    updated_account = AccountServices::Update.new(account, account_params).call
 
-    render json: account
+    render json: updated_account
+  rescue InvalidParser => e
+    error = {
+      manual_account_provider: ["'#{e.message}' is not a valid value."]
+    }
+    raise UnprocessableEntityError, error
   end
 
   # DELETE /accounts/1
   def destroy
     account = Account.find(params[:id])
+    if account.plaid_account_id.present?
+      raise BadRequestError, { account: ['Plaid accounts cannot be deleted at this time'] }
+    end
+
     account.destroy!
   end
 
   private
 
-  # Only allow a list of trusted parameters through for create action.
-  def account_create_params
-    params.permit(:account_provider, :active, :user_id)
-  end
-
-  # Only allow a list of trusted parameters through for update action.
-  def account_update_params
-    if params[:account_provider].present?
-      error = {
-        account_provider: ['cannot be updated after account creation.']
-      }
-      raise UnprocessableEntityError, error
-    end
-
-    params.permit(:active, :user_id)
+  def account_params
+    params.permit(:active, :manual_account_provider, :user_id)
   end
 end

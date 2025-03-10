@@ -8,7 +8,7 @@ module AccountServices
     test 'should create account successfully' do
       user = users(:one)
       params = {
-        account_provider: 'MockStatementParser',
+        manual_account_provider: 'MockStatementParser',
         user_id: user.id
       }
 
@@ -26,7 +26,7 @@ module AccountServices
     test 'should raise UnprocessableEntityError on invalid account provider' do
       user = users(:one)
       params = {
-        account_provider: 'InvalidProvider',
+        manual_account_provider: 'InvalidProvider',
         user_id: user.id
       }
 
@@ -35,15 +35,15 @@ module AccountServices
         service.call
       end
       expected_errors = [{
-        field: 'accountProvider',
-        message: "accountProvider 'InvalidProvider' is not a valid value."
+        field: 'manualAccountProvider',
+        message: "manualAccountProvider 'InvalidProvider' is not a valid value."
       }]
       assert_equal(expected_errors, error.errors)
     end
 
     test 'should raise UnprocessableEntityError on account model errors' do
       params = {
-        account_provider: 'MockStatementParser'
+        manual_account_provider: 'MockStatementParser'
       }
 
       service = AccountServices::Create.new(params)

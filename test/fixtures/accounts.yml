@@ -74,6 +74,7 @@ plaid_credit_account:
   current_balance: 200.42
 
 plaid_savings_account:
+  institution_name: plaid
   name: plaid account
   account_type: assets
   account_subtype: cash
@@ -92,3 +93,13 @@ plaid_loan_account:
   plaid_account_id: plaid-loan-account-id
   plaid_item: with_multiple_accounts
   current_balance: 10000.99
+
+manual_account_only:
+  institution_name: Chase
+  name: Freedom
+  account_type: liabilities
+  account_subtype: credit cards
+  active: true
+  deletable: true
+  user: one
+  parser_class: "ChaseFreedomCreditCard"
