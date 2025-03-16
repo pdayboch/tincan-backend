@@ -37,6 +37,14 @@ class SupportedAccountsEntityTest < ActiveSupport::TestCase
                  SupportedAccountsEntity.class_from_provider('MockStatementParser')
   end
 
+  test 'class_from_provider raises EmptyProviderError when provider is nil' do
+    error = assert_raises(EmptyProviderError) do
+      SupportedAccountsEntity.class_from_provider(nil)
+    end
+
+    assert_equal 'provider cannot be nil', error.message
+  end
+
   test 'test invalid class_from_provider raises invalid parser error' do
     assert_raises(InvalidParser) do
       SupportedAccountsEntity.class_from_provider('NonExistentProvider')
