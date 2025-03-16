@@ -39,8 +39,8 @@ class AccountSerializer < ActiveModel::Serializer
     object.institution_name
   end
 
-  attribute :manualAccountEnabled do
-    object.parser_class.present?
+  attribute :manualAccountProvider do
+    object.parser_class
   end
 
   attribute :plaidAccountEnabled do

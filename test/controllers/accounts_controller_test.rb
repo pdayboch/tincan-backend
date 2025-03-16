@@ -31,7 +31,7 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_equal StatementParser::MockStatementParser::ACCOUNT_NAME, response_body['name']
     assert_equal StatementParser::MockStatementParser::ACCOUNT_TYPE, response_body['accountType']
     assert_equal StatementParser::MockStatementParser::ACCOUNT_SUBTYPE, response_body['accountSubtype']
-    assert response_body['manualAccountEnabled']
+    assert_equal account_provider, response_body['manualAccountProvider']
     assert_not response_body['plaidAccountEnabled']
   end
 
