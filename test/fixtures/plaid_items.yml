@@ -86,3 +86,11 @@ with_products:
   billed_products: ["transactions"]
   products: ["transactions", "investments"]
   consented_data_scopes: ["investments", "account_balance_info", "transactions"]
+
+with_manual_parser_account:
+  user: one
+  access_key: eight-access-key
+  item_id: eight-item-id
+  institution_id: ins_456
+  accounts_synced_at: <%= 1.hour.ago %>
+  transactions_synced_at: <%= 1.hour.ago %>

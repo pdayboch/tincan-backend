@@ -2,16 +2,25 @@
 
 module AccountServices
   class Update
+    class ManualProviderNullificationError < StandardError
+      def message
+        'Cannot nullify manual account provider on a manual account'
+      end
+    end
+
     def initialize(account, params)
       @account = account
-      @account_provider = params[:manual_account_provider]
+      @account_provider = if params.key?(:manual_account_provider)
+                            params[:manual_account_provider]
+                          else
+                            :not_provided
+                          end
       @user_id = params[:user_id]
       @active = params[:active].nil? ? nil : params[:active]
     end
 
     def call
-      update_attributes = {}
-      update_attributes.merge!(parser_class_attributes) if @account_provider.present?
+      update_attributes = account_provider_attributes
       update_attributes['user_id'] = @user_id if @user_id.present?
       update_attributes['active'] = @active unless @active.nil?
 
@@ -23,6 +32,18 @@ module AccountServices
     end
 
     private
+
+    def account_provider_attributes
+      return {} if @account_provider == :not_provided
+
+      if @account_provider.nil?
+        raise ManualProviderNullificationError if @account.plaid_account_id.blank?
+
+        return { parser_class: nil }
+      end
+
+      parser_class_attributes
+    end
 
     def parser_class_attributes
       parser_class = SupportedAccountsEntity.class_from_provider(@account_provider)

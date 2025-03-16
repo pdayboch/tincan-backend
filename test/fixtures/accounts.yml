@@ -94,6 +94,17 @@ plaid_loan_account:
   plaid_item: with_multiple_accounts
   current_balance: 10000.99
 
+plaid_account_with_parser:
+  institution_name: Chase
+  name: plaid account with manual parser
+  account_type: assets
+  account_subtype: cash
+  active: true
+  user: one
+  plaid_account_id: plaid-with-parser-id
+  plaid_item: with_manual_parser_account
+  current_balance: 10000.99
+
 manual_account_only:
   institution_name: Chase
   name: Freedom
