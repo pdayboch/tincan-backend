@@ -23,7 +23,7 @@ module AccountServices
       raise UnprocessableEntityError, account.errors unless account.save
 
       account
-    rescue InvalidParser => e
+    rescue InvalidParserError => e
       error = {
         manual_account_provider: ["'#{e.message}' is not a valid value."]
       }

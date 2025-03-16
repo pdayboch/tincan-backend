@@ -21,7 +21,7 @@ class SupportedAccountsEntity
     raise EmptyProviderError, 'provider cannot be nil' unless provider
 
     class_name = "StatementParser::#{provider}"
-    raise InvalidParser, provider unless Object.const_defined?(class_name)
+    raise InvalidParserError, provider unless Object.const_defined?(class_name)
 
     class_name.constantize
   end

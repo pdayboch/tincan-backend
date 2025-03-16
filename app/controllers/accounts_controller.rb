@@ -28,7 +28,7 @@ class AccountsController < ApplicationController
     updated_account = AccountServices::Update.new(account, account_params).call
 
     render json: updated_account
-  rescue InvalidParser => e
+  rescue InvalidParserError => e
     error = {
       manual_account_provider: ["'#{e.message}' is not a valid value."]
     }

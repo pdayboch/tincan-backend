@@ -128,7 +128,7 @@ module AccountServices
         manual_account_provider: 'InvalidProvider'
       }
 
-      error = assert_raises InvalidParser do
+      error = assert_raises InvalidParserError do
         AccountServices::Update.new(account, params).call
       end
 

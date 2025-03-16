@@ -13,7 +13,7 @@ class SupportedAccountsEntityTest < ActiveSupport::TestCase
     end
   end
 
-  test 'test data returns correct values' do
+  test 'data returns correct values' do
     expected_data = [
       {
         accountProvider: 'MockStatementParser',
@@ -27,12 +27,12 @@ class SupportedAccountsEntityTest < ActiveSupport::TestCase
     assert_equal expected_data, @entity.data
   end
 
-  test 'test provider_from_class returns correct provider' do
+  test 'provider_from_class returns correct provider' do
     assert_equal 'MockStatementParser',
                  SupportedAccountsEntity.provider_from_class(StatementParser::MockStatementParser)
   end
 
-  test 'test class_from_provider returns correct class' do
+  test 'class_from_provider returns correct class' do
     assert_equal StatementParser::MockStatementParser,
                  SupportedAccountsEntity.class_from_provider('MockStatementParser')
   end
@@ -45,8 +45,8 @@ class SupportedAccountsEntityTest < ActiveSupport::TestCase
     assert_equal 'provider cannot be nil', error.message
   end
 
-  test 'test invalid class_from_provider raises invalid parser error' do
-    assert_raises(InvalidParser) do
+  test 'class_from_provider raises InvalidParserError with invalid provider' do
+    assert_raises(InvalidParserError) do
       SupportedAccountsEntity.class_from_provider('NonExistentProvider')
     end
   end
