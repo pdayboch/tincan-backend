@@ -20,6 +20,16 @@ class AccountsController < ApplicationController
   def create
     account = AccountServices::Create.new(account_params).call
     render json: account, status: :created, location: account
+  rescue InvalidParserError => e
+    error = {
+      manual_account_provider: ["'#{e.message}' is not a valid value."]
+    }
+    raise UnprocessableEntityError, error
+  rescue EmptyProviderError
+    error = {
+      manual_account_provider: ['cannot be empty']
+    }
+    raise UnprocessableEntityError, error
   end
 
   # PATCH/PUT /accounts/1
@@ -31,6 +41,11 @@ class AccountsController < ApplicationController
   rescue InvalidParserError => e
     error = {
       manual_account_provider: ["'#{e.message}' is not a valid value."]
+    }
+    raise UnprocessableEntityError, error
+  rescue AccountServices::Update::ManualProviderNullificationError
+    error = {
+      manual_account_provider: ['cannot be removed from a manual account.']
     }
     raise UnprocessableEntityError, error
   end
