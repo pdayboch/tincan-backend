@@ -20,6 +20,9 @@ class SupportedAccountsEntity
   def self.class_from_provider(provider)
     raise EmptyProviderError, 'provider cannot be nil' unless provider
 
+    # Ensure provider starts with an uppercase letter
+    raise InvalidParserError, provider if provider !~ /^[A-Z]/
+
     class_name = "StatementParser::#{provider}"
     raise InvalidParserError, provider unless Object.const_defined?(class_name)
 

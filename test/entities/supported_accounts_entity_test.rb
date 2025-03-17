@@ -50,4 +50,10 @@ class SupportedAccountsEntityTest < ActiveSupport::TestCase
       SupportedAccountsEntity.class_from_provider('NonExistentProvider')
     end
   end
+
+  test 'class_from_provider raises InvalidParserError with lowercase provider' do
+    assert_raises(InvalidParserError) do
+      SupportedAccountsEntity.class_from_provider('nonExistentProvider')
+    end
+  end
 end
