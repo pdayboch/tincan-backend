@@ -7,6 +7,7 @@ ruby '3.4.2'
 gem 'active_model_serializers'
 gem 'bcrypt'
 gem 'groupdate'
+gem 'jwt'
 gem 'ostruct'
 gem 'pdf-reader'
 gem 'pg', '~> 1.5', '>= 1.5.6'
@@ -26,15 +27,6 @@ gem 'tzinfo-data', platforms: %i[windows jruby]
 
 # Needed until Ruby 3.3.4 is released https://github.com/ruby/ruby/pull/11006
 gem 'net-pop', github: 'ruby/net-pop'
-
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-# gem "jbuilder"
-
-# Use Redis adapter to run Action Cable in production
-# gem "redis", ">= 4.0.1"
-
-# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
-# gem "kredis"
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem 'rack-cors'
